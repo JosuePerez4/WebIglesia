@@ -1,0 +1,35 @@
+# Archivos generados por Maven
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Archivos generados por STS (Spring Tool Suite)
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# Archivos generados por IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Archivos generados por NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+/build/
+/!**/src/main/**/build/
+/!**/src/test/**/build/
+
+# Archivos generados por VS Code
+.vscode/
+# Archivos de configuración de Maven
+pom.xml
