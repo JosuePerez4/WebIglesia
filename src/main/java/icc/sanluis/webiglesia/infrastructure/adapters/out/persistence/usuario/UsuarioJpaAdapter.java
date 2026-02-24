@@ -1,11 +1,15 @@
-package icc.sanluis.webiglesia.adapter.out.persistance.usuario;
+package icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.usuario;
 
 import java.util.Optional;
 import java.util.UUID;
 
-import icc.sanluis.webiglesia.core.domain.usuario.Usuario;
-import icc.sanluis.webiglesia.core.ports.out.usuario.UsuarioRepositoryPort;
+import org.springframework.stereotype.Component;
 
+import icc.sanluis.webiglesia.domain.usuario.model.Usuario;
+import icc.sanluis.webiglesia.domain.usuario.ports.out.UsuarioRepositoryPort;
+import icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.entities.UsuarioEntity;
+import icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.repositories.SpringDataUsuarioRepository;
+@Component
 public class UsuarioJpaAdapter implements UsuarioRepositoryPort {
     
     private final SpringDataUsuarioRepository repo;

@@ -1,11 +1,11 @@
-package icc.sanluis.webiglesia.config;
+package icc.sanluis.webiglesia.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import icc.sanluis.webiglesia.core.application.usuario.CrearUsuarioService;
-import icc.sanluis.webiglesia.core.ports.in.usuario.CrearUsuarioUseCase;
-import icc.sanluis.webiglesia.core.ports.out.usuario.UsuarioRepositoryPort;
+import icc.sanluis.webiglesia.application.usuario.services.CrearUsuarioService;
+import icc.sanluis.webiglesia.application.usuario.usecases.CrearUsuarioUseCase;
+import icc.sanluis.webiglesia.domain.usuario.ports.out.UsuarioRepositoryPort;
 
 @Configuration
 public class UsuarioUseCaseConfig {

@@ -1,4 +1,4 @@
-package icc.sanluis.webiglesia.core.domain.usuario;
+package icc.sanluis.webiglesia.domain.usuario.model;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.UUID;

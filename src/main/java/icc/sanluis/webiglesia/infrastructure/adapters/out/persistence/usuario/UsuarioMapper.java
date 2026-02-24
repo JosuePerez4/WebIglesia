@@ -1,6 +1,7 @@
-package icc.sanluis.webiglesia.adapter.out.persistance.usuario;
+package icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.usuario;
 
-import icc.sanluis.webiglesia.core.domain.usuario.Usuario;
+import icc.sanluis.webiglesia.domain.usuario.model.Usuario;
+import icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.entities.UsuarioEntity;
 
 public class UsuarioMapper {
     
