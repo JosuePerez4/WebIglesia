@@ -31,8 +31,6 @@ target/
 
 # Archivos generados por VS Code
 .vscode/
-# Archivos de configuración de Maven
-pom.xml
 # Archivos de configuración de Neon Agent
 .agents/
 skills-lock.json
