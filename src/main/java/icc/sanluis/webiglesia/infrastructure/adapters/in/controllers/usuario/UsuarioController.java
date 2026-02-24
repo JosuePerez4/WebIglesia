@@ -1,0 +1,52 @@
+package icc.sanluis.webiglesia.adapter.in.usuario.rest.usuario;
+
+import java.net.URI;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import icc.sanluis.webiglesia.adapter.in.usuario.rest.usuario.dto.CrearUsuarioRequest;
+import icc.sanluis.webiglesia.adapter.in.usuario.rest.usuario.dto.UsuarioResponse;
+import icc.sanluis.webiglesia.core.domain.usuario.Usuario;
+import icc.sanluis.webiglesia.core.ports.in.usuario.CrearUsuarioCommand;
+import icc.sanluis.webiglesia.core.ports.in.usuario.CrearUsuarioUseCase;
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping("/usuarios")
+public class UsuarioController {
+    private final CrearUsuarioUseCase crearUsuarioUseCase;
+
+    public UsuarioController(CrearUsuarioUseCase crearUsuarioUseCase) {
+        this.crearUsuarioUseCase = crearUsuarioUseCase;
+    }
+
+    @PostMapping
+    public ResponseEntity<UsuarioResponse> crear (@Valid @RequestBody CrearUsuarioRequest request) {
+        Usuario creado = crearUsuarioUseCase.crear(new CrearUsuarioCommand(
+                request.nombre(),
+                request.apellido(),
+                request.telefono(),
+                request.fechaDeNacimiento(),
+                request.rol()
+        ));
+
+        UsuarioResponse response = new UsuarioResponse(
+                creado.getId(),
+                creado.getNombre(),
+                creado.getApellido(),
+                creado.getTelefono(),
+                creado.getFechaDeNacimiento(),
+                creado.getRol(),
+                creado.isActivo(),
+                creado.getDiaIngreso()
+        );
+
+        return ResponseEntity
+                .created(URI.create("/usuarios/" + creado.getId()))
+                .body(response);
+    }
+}
