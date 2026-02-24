@@ -1,4 +1,4 @@
-package icc.sanluis.webiglesia.core.domain.usuario;
+package icc.sanluis.webiglesia.domain.usuario.model;
 
 public enum Rol {
     PROFESOR, ADMIN, ESTUDIANTE

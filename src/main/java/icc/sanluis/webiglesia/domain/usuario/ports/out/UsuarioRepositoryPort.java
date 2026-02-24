@@ -1,9 +1,9 @@
-package icc.sanluis.webiglesia.core.ports.out.usuario;
+package icc.sanluis.webiglesia.domain.usuario.ports.out;
 
 import java.util.Optional;
 import java.util.UUID;
 
-import icc.sanluis.webiglesia.core.domain.usuario.Usuario;
+import icc.sanluis.webiglesia.domain.usuario.model.Usuario;
 
 public interface UsuarioRepositoryPort {
     Usuario save(Usuario usuario);

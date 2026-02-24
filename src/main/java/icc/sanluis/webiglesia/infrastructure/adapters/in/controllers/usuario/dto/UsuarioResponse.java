@@ -1,10 +1,10 @@
-package icc.sanluis.webiglesia.adapter.in.usuario.rest.usuario.dto;
+package icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-import icc.sanluis.webiglesia.core.domain.usuario.Rol;
+import icc.sanluis.webiglesia.domain.usuario.model.Rol;
 
 public record UsuarioResponse(
         UUID id,

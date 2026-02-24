@@ -1,10 +1,10 @@
-package icc.sanluis.webiglesia.adapter.out.persistance.usuario;
+package icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.entities;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-import icc.sanluis.webiglesia.core.domain.usuario.Rol;
+import icc.sanluis.webiglesia.domain.usuario.model.Rol;
 import jakarta.persistence.*;
 import lombok.Data;
 

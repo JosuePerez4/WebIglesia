@@ -1,11 +1,11 @@
-package icc.sanluis.webiglesia.core.application.usuario;
+package icc.sanluis.webiglesia.application.usuario.services;
 
 import java.util.Objects;
 
-import icc.sanluis.webiglesia.core.domain.usuario.Usuario;
-import icc.sanluis.webiglesia.core.ports.in.usuario.CrearUsuarioCommand;
-import icc.sanluis.webiglesia.core.ports.in.usuario.CrearUsuarioUseCase;
-import icc.sanluis.webiglesia.core.ports.out.usuario.UsuarioRepositoryPort;
+import icc.sanluis.webiglesia.application.usuario.usecases.CrearUsuarioUseCase;
+import icc.sanluis.webiglesia.domain.usuario.model.Usuario;
+import icc.sanluis.webiglesia.domain.usuario.ports.in.CrearUsuarioCommand;
+import icc.sanluis.webiglesia.domain.usuario.ports.out.UsuarioRepositoryPort;
 
 public class CrearUsuarioService implements CrearUsuarioUseCase {
     

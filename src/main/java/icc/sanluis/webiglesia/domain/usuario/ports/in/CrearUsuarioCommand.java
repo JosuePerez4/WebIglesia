@@ -1,6 +1,7 @@
-package icc.sanluis.webiglesia.core.ports.in.usuario;
+package icc.sanluis.webiglesia.domain.usuario.ports.in;
 import java.time.LocalDate;
-import icc.sanluis.webiglesia.core.domain.usuario.Rol;
+
+import icc.sanluis.webiglesia.domain.usuario.model.Rol;
 
 public record CrearUsuarioCommand(
     String nombre,
