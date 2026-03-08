@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -11,11 +12,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import icc.sanluis.webiglesia.application.usuario.usecases.CambiarEstadoUsuarioUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearUsuarioUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarUsuarioUseCase;
 import icc.sanluis.webiglesia.domain.usuario.model.Usuario;
+import icc.sanluis.webiglesia.domain.usuario.ports.in.CambiarEstadoUsuarioCommand;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.CrearUsuarioCommand;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.EditarUsuarioCommand;
+import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.CambiarEstadoUsuarioRequest;
 import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.CrearUsuarioRequest;
 import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.EditarUsuarioRequest;
 import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.UsuarioResponse;
@@ -27,10 +31,12 @@ import jakarta.validation.Valid;
 public class UsuarioController {
     private final CrearUsuarioUseCase crearUsuarioUseCase;
     private final EditarUsuarioUseCase editarUsuarioUseCase;
+    private final CambiarEstadoUsuarioUseCase cambiarEstadoUsuarioUseCase;
 
-    public UsuarioController(CrearUsuarioUseCase crearUsuarioUseCase, EditarUsuarioUseCase editarUsuarioUseCase) {
+    public UsuarioController(CrearUsuarioUseCase crearUsuarioUseCase, EditarUsuarioUseCase editarUsuarioUseCase, CambiarEstadoUsuarioUseCase cambiarEstadoUsuarioUseCase) {
         this.crearUsuarioUseCase = crearUsuarioUseCase;
         this.editarUsuarioUseCase = editarUsuarioUseCase;
+        this.cambiarEstadoUsuarioUseCase = cambiarEstadoUsuarioUseCase;
     }
 
     @PostMapping("/crear")
@@ -67,6 +73,15 @@ public class UsuarioController {
             request.rol()
         );
         Usuario usuarioActualizado = editarUsuarioUseCase.editar(id, editado);
+        return ResponseEntity.ok(UsuarioResponse.fromDomain(usuarioActualizado));
+    }
+
+    @PatchMapping("cambiar-estado/{id}")
+    public ResponseEntity<UsuarioResponse> cambiarEstado(@PathVariable UUID id, @Valid @RequestBody CambiarEstadoUsuarioRequest request) {
+        CambiarEstadoUsuarioCommand usuarioEstadoCambiado = new CambiarEstadoUsuarioCommand(
+            request.activo()
+        );
+        Usuario usuarioActualizado = cambiarEstadoUsuarioUseCase.cambiarEstado(id, usuarioEstadoCambiado) ;
         return ResponseEntity.ok(UsuarioResponse.fromDomain(usuarioActualizado));
     }
 }
