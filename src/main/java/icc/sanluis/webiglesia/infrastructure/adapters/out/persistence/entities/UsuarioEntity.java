@@ -1,11 +1,15 @@
 package icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.entities;
 
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import icc.sanluis.webiglesia.domain.usuario.model.Rol;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
 
 @Data
@@ -15,14 +19,11 @@ public class UsuarioEntity {
     @Id
     private UUID id;
 
-    private String nombre;
-    private String apellido;
+    @Column(name = "username")
+    private String username;
 
-    @Column(nullable = true)
-    private String telefono;
-
-    @Column(name = "fecha_nacimiento")
-    private LocalDate fechaDeNacimiento;
+    @Column(name = "password_hash")
+    private String passwordHash;
 
     @Enumerated(EnumType.STRING)
     private Rol rol;

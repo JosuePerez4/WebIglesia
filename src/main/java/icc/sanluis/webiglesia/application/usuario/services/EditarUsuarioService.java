@@ -8,22 +8,22 @@ import icc.sanluis.webiglesia.domain.usuario.ports.in.EditarUsuarioCommand;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.UsuarioRepositoryPort;
 
 public class EditarUsuarioService implements EditarUsuarioUseCase {
-    
+
     private final UsuarioRepositoryPort usuarioRepository;
 
-    public EditarUsuarioService (UsuarioRepositoryPort usuarioRepository) {
+    public EditarUsuarioService(UsuarioRepositoryPort usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
     }
 
     @Override
-    public Usuario editar (UUID id, EditarUsuarioCommand usuario) {
-        // Buscar si el Usuario existe
-        Usuario usuarioAEditar = usuarioRepository.findById(id).orElseThrow(()-> new RuntimeException("El usuario no existe"));
-        // Si existe, editarlo
-        usuarioAEditar.setNombre(usuario.nombre());
-        usuarioAEditar.setApellido(usuario.apellido());
+    public Usuario editar(UUID id, EditarUsuarioCommand usuario) {
+        Usuario usuarioAEditar = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("El usuario no existe"));
+
+        usuarioAEditar.setUsername(usuario.nombre());
+        usuarioAEditar.setPasswordHash(usuario.apellido());
         usuarioAEditar.setRol(usuario.rol());
-        // Retornamos el usuario con los nuevos valores, para modificar
+
         return usuarioRepository.save(usuarioAEditar);
     }
 }
