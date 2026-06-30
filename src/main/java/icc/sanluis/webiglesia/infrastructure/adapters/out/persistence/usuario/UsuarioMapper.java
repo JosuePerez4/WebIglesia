@@ -8,10 +8,8 @@ public class UsuarioMapper {
     public static UsuarioEntity toEntity(Usuario u) {
         UsuarioEntity e = new UsuarioEntity();
         e.setId(u.getId());
-        e.setNombre(u.getNombre());
-        e.setApellido(u.getApellido());
-        e.setTelefono(u.getTelefono());
-        e.setFechaDeNacimiento(u.getFechaDeNacimiento());
+        e.setUsername(u.getUsername());
+        e.setPasswordHash(u.getPasswordHash());
         e.setRol(u.getRol());
         e.setActivo(u.isActivo());
         e.setDiaIngreso(u.getDiaIngreso());
@@ -21,10 +19,8 @@ public class UsuarioMapper {
     public static Usuario toDomain(UsuarioEntity e) {
         return new Usuario(
                 e.getId(),
-                e.getNombre(),
-                e.getApellido(),
-                e.getTelefono(),
-                e.getFechaDeNacimiento(),
+                e.getUsername(),
+                e.getPasswordHash(),
                 e.getRol(),
                 e.isActivo(),
                 e.getDiaIngreso()

@@ -7,5 +7,6 @@ import jakarta.validation.constraints.NotNull;
 public record EditarUsuarioRequest(
     @NotBlank String nombre,
     @NotBlank String apellido,
+    String correo,
     @NotNull Rol rol
 ) {}

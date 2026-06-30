@@ -8,5 +8,6 @@ public record CrearUsuarioCommand(
     String apellido,
     String telefono,
     LocalDate fechaDeNacimiento,
+    String correo,
     Rol rol
 ) {}

@@ -11,5 +11,6 @@ public record CrearUsuarioRequest(
     @NotBlank String apellido,
     String telefono,
     LocalDate fechaDeNacimiento,
+    String correo,
     @NotNull Rol rol
 ) {}
