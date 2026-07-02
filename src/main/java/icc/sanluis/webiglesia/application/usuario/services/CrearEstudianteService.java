@@ -55,12 +55,7 @@ public class CrearEstudianteService implements CrearEstudianteUseCase {
         if (command.apellido() == null || command.apellido().isBlank()) {
             throw new IllegalArgumentException("El apellido del estudiante es obligatorio");
         }
-        if (command.telefono() == null || command.telefono().isBlank()) {
-            throw new IllegalArgumentException("El teléfono del estudiante es obligatorio");
-        }
-        if (command.fechaDeNacimiento() == null) {
-            throw new IllegalArgumentException("La fecha de nacimiento es obligatoria");
-        }
+        // Teléfono y fecha de nacimiento son opcionales ahora.
 
         return new Estudiante();
     }

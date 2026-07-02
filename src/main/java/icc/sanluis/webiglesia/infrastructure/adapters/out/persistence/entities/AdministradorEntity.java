@@ -10,8 +10,8 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "estudiante")
-public class EstudianteEntity extends Persona {
-    @Column(name = "grupo_id")
-    private UUID grupoId;
+@Table(name = "administrador")
+public class AdministradorEntity extends Persona {
+    @Column(name = "usuario_id")
+    private UUID usuarioId;
 }

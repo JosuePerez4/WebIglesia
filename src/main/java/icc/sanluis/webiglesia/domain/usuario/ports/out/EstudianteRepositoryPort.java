@@ -16,4 +16,5 @@ public interface EstudianteRepositoryPort {
         }
         return saved;
     }
+    List<Estudiante> findAll();
 }

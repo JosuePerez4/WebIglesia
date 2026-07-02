@@ -1,5 +1,6 @@
 package icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.usuario;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,5 +29,12 @@ public class EstudianteJpaAdapter implements EstudianteRepositoryPort {
     @Override
     public Optional<Estudiante> findById(UUID id) {
         return repository.findById(id).map(EstudianteMapper::toDomain);
+    }
+
+    @Override
+    public List<Estudiante> findAll() {
+        return repository.findAll().stream()
+                .map(EstudianteMapper::toDomain)
+                .collect(java.util.stream.Collectors.toList());
     }
 }

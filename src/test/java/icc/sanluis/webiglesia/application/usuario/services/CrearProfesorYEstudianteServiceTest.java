@@ -153,5 +153,10 @@ class CrearProfesorYEstudianteServiceTest {
             }
             return saved;
         }
+
+        @Override
+        public List<Estudiante> findAll() {
+            return new ArrayList<>(estudiantes.values());
+        }
     }
 }
