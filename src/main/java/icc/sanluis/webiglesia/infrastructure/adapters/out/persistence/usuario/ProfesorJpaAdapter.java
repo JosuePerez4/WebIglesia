@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import icc.sanluis.webiglesia.domain.usuario.model.Profesor;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.ProfesorRepositoryPort;
+import icc.sanluis.webiglesia.domain.usuario.ports.out.UsuarioRepositoryPort;
 import icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.entities.ProfesorEntity;
 import icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.repositories.SpringDataProfesorRepository;
 
@@ -14,20 +15,29 @@ import icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.repositori
 public class ProfesorJpaAdapter implements ProfesorRepositoryPort {
 
     private final SpringDataProfesorRepository repository;
+    private final UsuarioRepositoryPort usuarioRepository;
 
-    public ProfesorJpaAdapter(SpringDataProfesorRepository repository) {
+    public ProfesorJpaAdapter(SpringDataProfesorRepository repository, UsuarioRepositoryPort usuarioRepository) {
         this.repository = repository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Override
     public Profesor save(Profesor profesor) {
         ProfesorEntity entity = ProfesorMapper.toEntity(profesor);
-        return ProfesorMapper.toDomain(repository.save(entity));
+        return enriquecerConUsuario(repository.save(entity));
     }
 
     @Override
     public Optional<Profesor> findById(UUID id) {
-        return repository.findById(id).map(ProfesorMapper::toDomain);
+        return repository.findById(id).map(this::enriquecerConUsuario);
+    }
+
+    // El id del profesor es el mismo que el de su usuario asociado: se busca por ese id.
+    private Profesor enriquecerConUsuario(ProfesorEntity entity) {
+        Profesor profesor = ProfesorMapper.toDomain(entity);
+        usuarioRepository.findById(entity.getId()).ifPresent(profesor::setUsuario);
+        return profesor;
     }
 
     @Override

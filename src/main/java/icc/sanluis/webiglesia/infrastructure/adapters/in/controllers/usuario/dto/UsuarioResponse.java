@@ -10,7 +10,6 @@ public record UsuarioResponse(
         UUID id,
         String username,
         String passwordHash,
-        String correo,
         Rol rol,
         boolean activo,
         OffsetDateTime createdAt
@@ -21,7 +20,6 @@ public record UsuarioResponse(
                 usuario.getId(),
                 usuario.getUsername(),
                 usuario.getPasswordHash(),
-                null,
                 usuario.getRol(),
                 usuario.isActivo(),
                 usuario.getDiaIngreso()

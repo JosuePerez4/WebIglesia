@@ -27,9 +27,10 @@ public class CrearProfesorService implements CrearProfesorUseCase {
         Objects.requireNonNull(command, "El comando de profesor es obligatorio");
         validar(command);
 
-        String username = generarUsername(command.nombre(), command.fechaDeNacimiento());
+        UUID id = UUID.randomUUID();
+        String username = UsernameGenerator.generar(command.nombre(), command.fechaDeNacimiento(), id);
         Usuario usuario = new Usuario(
-                UUID.randomUUID(),
+                id,
                 username,
                 command.telefono(),
                 Rol.PROFESOR,
@@ -39,7 +40,8 @@ public class CrearProfesorService implements CrearProfesorUseCase {
         usuario = usuarioRepository.save(usuario);
 
         Profesor profesor = new Profesor();
-        profesor.setId(UUID.randomUUID());
+        // El profesor comparte id con su usuario asociado.
+        profesor.setId(id);
         profesor.setNombre(command.nombre().trim());
         profesor.setApellido(command.apellido().trim());
         profesor.setTelefono(command.telefono());
@@ -63,20 +65,5 @@ public class CrearProfesorService implements CrearProfesorUseCase {
         if (command.fechaDeNacimiento() == null) {
             throw new IllegalArgumentException("La fecha de nacimiento es obligatoria");
         }
-    }
-
-    private String generarUsername(String nombre, java.time.LocalDate fechaDeNacimiento) {
-        String nombreNormalizado = nombre.trim().toLowerCase()
-                .replaceAll("[áàäâ]", "a")
-                .replaceAll("[éèëê]", "e")
-                .replaceAll("[íìïî]", "i")
-                .replaceAll("[óòöô]", "o")
-                .replaceAll("[úùüû]", "u")
-                .replaceAll("[^a-z0-9]", "");
-
-        StringBuilder username = new StringBuilder(nombreNormalizado);
-        username.append(fechaDeNacimiento.getDayOfMonth());
-        username.append(fechaDeNacimiento.getMonthValue());
-        return username.toString();
     }
 }

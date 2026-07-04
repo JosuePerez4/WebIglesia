@@ -11,7 +11,9 @@ public record EstudianteResponse(
         String apellido,
         String telefono,
         LocalDate fechaDeNacimiento,
-        String correo
+        String correo,
+        String username,
+        String passwordHash
 ) {
     public static EstudianteResponse fromDomain(Estudiante estudiante) {
         return new EstudianteResponse(
@@ -20,7 +22,9 @@ public record EstudianteResponse(
                 estudiante.getApellido(),
                 estudiante.getTelefono(),
                 estudiante.getFechaDeNacimiento(),
-                estudiante.getCorreo()
+                estudiante.getCorreo(),
+                estudiante.getUsuario() != null ? estudiante.getUsuario().getUsername() : null,
+                estudiante.getUsuario() != null ? estudiante.getUsuario().getPasswordHash() : null
         );
     }
 }

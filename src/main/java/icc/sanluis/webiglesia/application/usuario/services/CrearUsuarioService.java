@@ -21,17 +21,17 @@ public class CrearUsuarioService implements CrearUsuarioUseCase {
     public Usuario crear(CrearUsuarioCommand usuario) {
         Objects.requireNonNull(usuario.rol(), "Rol es obligatorio");
 
-        if (usuario.nombre() == null || usuario.nombre().isBlank()) {
-            throw new IllegalArgumentException("Nombre es obligatorio");
+        if (usuario.nombreusuario() == null || usuario.nombreusuario().isBlank()) {
+            throw new IllegalArgumentException("El nombre de usuario es obligatorio");
         }
-        if (usuario.apellido() == null || usuario.apellido().isBlank()) {
-            throw new IllegalArgumentException("Apellido es obligatorio");
+        if (usuario.contrasena() == null || usuario.contrasena().isBlank()) {
+            throw new IllegalArgumentException("La contraseña es obligatoria");
         }
 
         Usuario nuevoUsuario = new Usuario(
                 UUID.randomUUID(),
-                usuario.nombre().trim(),
-                usuario.apellido().trim(),
+                usuario.nombreusuario().trim(),
+                usuario.contrasena(),
                 usuario.rol(),
                 true,
                 OffsetDateTime.now()

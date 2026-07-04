@@ -103,7 +103,9 @@ public class EstudianteController {
                 estudiante.getFechaDeNacimiento(),
                 estudiante.getCorreo(),
                 estudiante.getGrupoId(),
-                nombreGrupo
+                nombreGrupo,
+                estudiante.getUsuario() != null ? estudiante.getUsuario().getUsername() : null,
+                estudiante.getUsuario() != null ? estudiante.getUsuario().getPasswordHash() : null
         );
     }
 }

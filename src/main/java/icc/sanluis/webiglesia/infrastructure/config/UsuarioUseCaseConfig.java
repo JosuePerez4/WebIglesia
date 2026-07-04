@@ -7,6 +7,7 @@ import icc.sanluis.webiglesia.application.usuario.services.CambiarEstadoUSuarioS
 import icc.sanluis.webiglesia.application.usuario.services.CrearEstudianteService;
 import icc.sanluis.webiglesia.application.usuario.services.CrearProfesorService;
 import icc.sanluis.webiglesia.application.usuario.services.CrearUsuarioService;
+import icc.sanluis.webiglesia.application.usuario.services.EditarProfesorService;
 import icc.sanluis.webiglesia.application.usuario.services.EditarUsuarioService;
 import icc.sanluis.webiglesia.application.usuario.services.CrearGrupoService;
 import icc.sanluis.webiglesia.application.usuario.services.EditarGrupoService;
@@ -20,6 +21,7 @@ import icc.sanluis.webiglesia.application.usuario.usecases.CambiarEstadoUsuarioU
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearEstudianteUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearProfesorUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearUsuarioUseCase;
+import icc.sanluis.webiglesia.application.usuario.usecases.EditarProfesorUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarUsuarioUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearGrupoUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarGrupoUseCase;
@@ -63,8 +65,15 @@ public class UsuarioUseCaseConfig {
     }
 
     @Bean
-    public CrearEstudianteUseCase crearEstudianteUseCase(ProfesorRepositoryPort profesorRepositoryPort, EstudianteRepositoryPort estudianteRepositoryPort) {
-        return new CrearEstudianteService(profesorRepositoryPort, estudianteRepositoryPort);
+    public EditarProfesorUseCase editarProfesorUseCase(ProfesorRepositoryPort profesorRepositoryPort) {
+        return new EditarProfesorService(profesorRepositoryPort);
+    }
+
+    @Bean
+    public CrearEstudianteUseCase crearEstudianteUseCase(ProfesorRepositoryPort profesorRepositoryPort,
+                                                         EstudianteRepositoryPort estudianteRepositoryPort,
+                                                         UsuarioRepositoryPort usuarioRepositoryPort) {
+        return new CrearEstudianteService(profesorRepositoryPort, estudianteRepositoryPort, usuarioRepositoryPort);
     }
 
     @Bean
@@ -105,17 +114,17 @@ public class UsuarioUseCaseConfig {
     }
 
     @Bean
-    public CrearEstudianteGeneralUseCase crearEstudianteGeneralUseCase(EstudianteRepositoryPort estudianteRepositoryPort) {
-        return new EstudianteGeneralService(estudianteRepositoryPort);
+    public CrearEstudianteGeneralUseCase crearEstudianteGeneralUseCase(EstudianteRepositoryPort estudianteRepositoryPort, UsuarioRepositoryPort usuarioRepositoryPort) {
+        return new EstudianteGeneralService(estudianteRepositoryPort, usuarioRepositoryPort);
     }
 
     @Bean
-    public EditarEstudianteUseCase editarEstudianteUseCase(EstudianteRepositoryPort estudianteRepositoryPort) {
-        return new EstudianteGeneralService(estudianteRepositoryPort);
+    public EditarEstudianteUseCase editarEstudianteUseCase(EstudianteRepositoryPort estudianteRepositoryPort, UsuarioRepositoryPort usuarioRepositoryPort) {
+        return new EstudianteGeneralService(estudianteRepositoryPort, usuarioRepositoryPort);
     }
 
     @Bean
-    public ObtenerEstudianteUseCase obtenerEstudianteUseCase(EstudianteRepositoryPort estudianteRepositoryPort) {
-        return new EstudianteGeneralService(estudianteRepositoryPort);
+    public ObtenerEstudianteUseCase obtenerEstudianteUseCase(EstudianteRepositoryPort estudianteRepositoryPort, UsuarioRepositoryPort usuarioRepositoryPort) {
+        return new EstudianteGeneralService(estudianteRepositoryPort, usuarioRepositoryPort);
     }
 }

@@ -1,9 +1,6 @@
 package icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.usuario;
 
-import java.util.UUID;
-
 import icc.sanluis.webiglesia.domain.usuario.model.Profesor;
-import icc.sanluis.webiglesia.domain.usuario.model.Usuario;
 import icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.entities.ProfesorEntity;
 
 public class ProfesorMapper {
@@ -16,7 +13,6 @@ public class ProfesorMapper {
         entity.setTelefono(profesor.getTelefono());
         entity.setFechaDeNacimiento(profesor.getFechaDeNacimiento());
         entity.setCorreo(profesor.getCorreo());
-        entity.setUsuarioId(profesor.getUsuario() != null ? profesor.getUsuario().getId() : null);
         return entity;
     }
 
@@ -28,11 +24,6 @@ public class ProfesorMapper {
         profesor.setTelefono(entity.getTelefono());
         profesor.setFechaDeNacimiento(entity.getFechaDeNacimiento());
         profesor.setCorreo(entity.getCorreo());
-        if (entity.getUsuarioId() != null) {
-            Usuario usuario = new Usuario();
-            usuario.setId(entity.getUsuarioId());
-            profesor.setUsuario(usuario);
-        }
         return profesor;
     }
 }

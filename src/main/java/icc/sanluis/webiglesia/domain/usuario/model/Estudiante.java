@@ -4,6 +4,7 @@ import java.util.UUID;
 
 public class Estudiante extends Persona {
     private UUID grupoId;
+    private Usuario usuario;
 
     public Estudiante() {
     }
@@ -14,6 +15,14 @@ public class Estudiante extends Persona {
 
     public void setGrupoId(UUID grupoId) {
         this.grupoId = grupoId;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     @Override

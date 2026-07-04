@@ -1,5 +1,6 @@
 package icc.sanluis.webiglesia.application.usuario.services;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -8,18 +9,25 @@ import java.util.UUID;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearEstudianteUseCase;
 import icc.sanluis.webiglesia.domain.usuario.model.Estudiante;
 import icc.sanluis.webiglesia.domain.usuario.model.Profesor;
+import icc.sanluis.webiglesia.domain.usuario.model.Rol;
+import icc.sanluis.webiglesia.domain.usuario.model.Usuario;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.CrearEstudianteCommand;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.EstudianteRepositoryPort;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.ProfesorRepositoryPort;
+import icc.sanluis.webiglesia.domain.usuario.ports.out.UsuarioRepositoryPort;
 
 public class CrearEstudianteService implements CrearEstudianteUseCase {
 
     private final ProfesorRepositoryPort profesorRepository;
     private final EstudianteRepositoryPort estudianteRepository;
+    private final UsuarioRepositoryPort usuarioRepository;
 
-    public CrearEstudianteService(ProfesorRepositoryPort profesorRepository, EstudianteRepositoryPort estudianteRepository) {
+    public CrearEstudianteService(ProfesorRepositoryPort profesorRepository,
+                                  EstudianteRepositoryPort estudianteRepository,
+                                  UsuarioRepositoryPort usuarioRepository) {
         this.profesorRepository = profesorRepository;
         this.estudianteRepository = estudianteRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Override
@@ -29,12 +37,18 @@ public class CrearEstudianteService implements CrearEstudianteUseCase {
                 .orElseThrow(() -> new IllegalArgumentException("No existe el profesor indicado"));
 
         Estudiante estudiante = convertir(command);
-        estudiante.setId(UUID.randomUUID());
+        UUID id = UUID.randomUUID();
+        String username = UsernameGenerator.generar(command.nombre(), command.fechaDeNacimiento(), id);
+        Usuario usuario = usuarioRepository.save(new Usuario(id, username, command.telefono(), Rol.ESTUDIANTE, true, OffsetDateTime.now()));
+
+        // El estudiante comparte id con su usuario asociado.
+        estudiante.setId(id);
         estudiante.setNombre(command.nombre().trim());
         estudiante.setApellido(command.apellido().trim());
         estudiante.setTelefono(command.telefono());
         estudiante.setFechaDeNacimiento(command.fechaDeNacimiento());
         estudiante.setCorreo(command.correo());
+        estudiante.setUsuario(usuario);
 
         return estudianteRepository.save(estudiante);
     }

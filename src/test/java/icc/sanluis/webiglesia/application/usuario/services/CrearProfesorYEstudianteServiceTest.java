@@ -42,6 +42,7 @@ class CrearProfesorYEstudianteServiceTest {
         assertThat(profesor.getUsuario().getUsername()).isEqualTo("josue2810");
         assertThat(profesor.getUsuario().getPasswordHash()).isEqualTo("987654321");
         assertThat(profesor.getRol()).isEqualTo(Rol.PROFESOR);
+        assertThat(profesor.getId()).isEqualTo(profesor.getUsuario().getId());
     }
 
     @Test
@@ -59,7 +60,7 @@ class CrearProfesorYEstudianteServiceTest {
                 "maria@example.com"
         ));
 
-        CrearEstudianteService estudianteService = new CrearEstudianteService(profesorRepository, estudianteRepository);
+        CrearEstudianteService estudianteService = new CrearEstudianteService(profesorRepository, estudianteRepository, usuarioRepository);
         Estudiante estudiante = estudianteService.crear(profesor.getId(), new CrearEstudianteCommand(
                 "Ana",
                 "García",
@@ -72,13 +73,17 @@ class CrearProfesorYEstudianteServiceTest {
         assertThat(estudiante.getNombre()).isEqualTo("Ana");
         assertThat(estudiante.getCorreo()).isEqualTo("ana@example.com");
         assertThat(estudianteRepository.findById(estudiante.getId())).isPresent();
+        assertThat(estudiante.getUsuario()).isNotNull();
+        assertThat(estudiante.getUsuario().getId()).isEqualTo(estudiante.getId());
+        assertThat(estudiante.getUsuario().getRol()).isEqualTo(Rol.ESTUDIANTE);
     }
 
     @Test
     void shouldRejectStudentCreationWhenProfessorDoesNotExist() {
         InMemoryProfesorRepository profesorRepository = new InMemoryProfesorRepository();
         InMemoryEstudianteRepository estudianteRepository = new InMemoryEstudianteRepository();
-        CrearEstudianteService service = new CrearEstudianteService(profesorRepository, estudianteRepository);
+        InMemoryUsuarioRepository usuarioRepository = new InMemoryUsuarioRepository();
+        CrearEstudianteService service = new CrearEstudianteService(profesorRepository, estudianteRepository, usuarioRepository);
 
         assertThatThrownBy(() -> service.crear(UUID.randomUUID(), new CrearEstudianteCommand(
                 "Luis",

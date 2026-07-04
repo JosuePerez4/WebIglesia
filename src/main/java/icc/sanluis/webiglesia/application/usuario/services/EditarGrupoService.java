@@ -36,46 +36,50 @@ public class EditarGrupoService implements EditarGrupoUseCase {
         }
 
         if (command.profesorIds() != null) {
-            if (command.profesorIds().isEmpty() || command.profesorIds().size() > 2) {
-                throw new IllegalArgumentException("Un grupo debe tener entre 1 y 2 profesores asignados");
-            }
-            List<Profesor> nuevosProfesores = new ArrayList<>();
+            // profesorIds son profesores a agregar al grupo; los que ya estaban se conservan.
+            List<Profesor> profesoresActuales = new ArrayList<>(grupoExistente.getProfesores());
+
             for (UUID pId : command.profesorIds()) {
                 Profesor prof = profesorRepository.findById(pId)
                         .orElseThrow(() -> new IllegalArgumentException("Profesor no encontrado: " + pId));
-                nuevosProfesores.add(prof);
-            }
-            grupoExistente.setProfesores(nuevosProfesores);
-        }
 
-        if (command.estudianteIds() != null) {
-            List<Estudiante> nuevosEstudiantes = new ArrayList<>();
-            List<UUID> nuevosIds = command.estudianteIds();
-            boolean force = command.forzarCambioGrupo() != null && command.forzarCambioGrupo();
-
-            // Desasociar estudiantes que ya no están en el grupo
-            for (Estudiante est : grupoExistente.getEstudiantes()) {
-                if (!nuevosIds.contains(est.getId())) {
-                    est.setGrupoId(null);
-                    estudianteRepository.save(est);
+                boolean yaEstabaEnElGrupo = profesoresActuales.stream().anyMatch(p -> p.getId().equals(prof.getId()));
+                if (!yaEstabaEnElGrupo) {
+                    profesoresActuales.add(prof);
                 }
             }
 
-            // Asociar nuevos estudiantes
-            for (UUID eId : nuevosIds) {
+            if (profesoresActuales.isEmpty() || profesoresActuales.size() > 2) {
+                throw new IllegalArgumentException("Un grupo debe tener entre 1 y 2 profesores asignados");
+            }
+
+            grupoExistente.setProfesores(profesoresActuales);
+        }
+
+        if (command.estudianteIds() != null) {
+            boolean force = command.forzarCambioGrupo() != null && command.forzarCambioGrupo();
+
+            // estudianteIds son estudiantes a agregar al grupo; los que ya estaban se conservan.
+            List<Estudiante> estudiantesActuales = new ArrayList<>(grupoExistente.getEstudiantes());
+
+            for (UUID eId : command.estudianteIds()) {
                 Estudiante est = estudianteRepository.findById(eId)
                         .orElseThrow(() -> new IllegalArgumentException("Estudiante no encontrado: " + eId));
-                
+
                 // Si el estudiante ya tiene grupo y no es este grupo, lanzar error a menos que se fuerce
                 if (est.getGrupoId() != null && !est.getGrupoId().equals(id) && !force) {
                     throw new IllegalArgumentException("El estudiante " + est.getNombre() + " " + est.getApellido() + " ya pertenece a otro grupo. Por favor, confirme el traslado.");
                 }
-                
+
                 est.setGrupoId(id);
                 estudianteRepository.save(est);
-                nuevosEstudiantes.add(est);
+
+                boolean yaEstabaEnElGrupo = estudiantesActuales.stream().anyMatch(e -> e.getId().equals(est.getId()));
+                if (!yaEstabaEnElGrupo) {
+                    estudiantesActuales.add(est);
+                }
             }
-            grupoExistente.setEstudiantes(nuevosEstudiantes);
+            grupoExistente.setEstudiantes(estudiantesActuales);
         }
 
         return grupoRepository.save(grupoExistente);

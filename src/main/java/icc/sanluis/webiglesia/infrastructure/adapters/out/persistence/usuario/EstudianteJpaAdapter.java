@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import icc.sanluis.webiglesia.domain.usuario.model.Estudiante;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.EstudianteRepositoryPort;
+import icc.sanluis.webiglesia.domain.usuario.ports.out.UsuarioRepositoryPort;
 import icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.entities.EstudianteEntity;
 import icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.repositories.SpringDataEstudianteRepository;
 
@@ -15,26 +16,35 @@ import icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.repositori
 public class EstudianteJpaAdapter implements EstudianteRepositoryPort {
 
     private final SpringDataEstudianteRepository repository;
+    private final UsuarioRepositoryPort usuarioRepository;
 
-    public EstudianteJpaAdapter(SpringDataEstudianteRepository repository) {
+    public EstudianteJpaAdapter(SpringDataEstudianteRepository repository, UsuarioRepositoryPort usuarioRepository) {
         this.repository = repository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Override
     public Estudiante save(Estudiante estudiante) {
         EstudianteEntity entity = EstudianteMapper.toEntity(estudiante);
-        return EstudianteMapper.toDomain(repository.save(entity));
+        return enriquecerConUsuario(repository.save(entity));
     }
 
     @Override
     public Optional<Estudiante> findById(UUID id) {
-        return repository.findById(id).map(EstudianteMapper::toDomain);
+        return repository.findById(id).map(this::enriquecerConUsuario);
     }
 
     @Override
     public List<Estudiante> findAll() {
         return repository.findAll().stream()
-                .map(EstudianteMapper::toDomain)
+                .map(this::enriquecerConUsuario)
                 .collect(java.util.stream.Collectors.toList());
+    }
+
+    // El id del estudiante es el mismo que el de su usuario asociado: se busca por ese id.
+    private Estudiante enriquecerConUsuario(EstudianteEntity entity) {
+        Estudiante estudiante = EstudianteMapper.toDomain(entity);
+        usuarioRepository.findById(entity.getId()).ifPresent(estudiante::setUsuario);
+        return estudiante;
     }
 }
