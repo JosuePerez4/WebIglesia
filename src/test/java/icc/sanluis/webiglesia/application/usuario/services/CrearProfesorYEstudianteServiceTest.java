@@ -19,16 +19,20 @@ import icc.sanluis.webiglesia.domain.usuario.model.Usuario;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.CrearEstudianteCommand;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.CrearProfesorCommand;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.EstudianteRepositoryPort;
+import icc.sanluis.webiglesia.domain.usuario.ports.out.PasswordHasherPort;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.ProfesorRepositoryPort;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.UsuarioRepositoryPort;
+import icc.sanluis.webiglesia.infrastructure.adapters.out.security.BCryptPasswordHasherAdapter;
 
 class CrearProfesorYEstudianteServiceTest {
+
+    private final PasswordHasherPort passwordHasher = new BCryptPasswordHasherAdapter();
 
     @Test
     void shouldGenerateUsernameWithoutAccentsAndLowercase() {
         InMemoryUsuarioRepository usuarioRepository = new InMemoryUsuarioRepository();
         InMemoryProfesorRepository profesorRepository = new InMemoryProfesorRepository();
-        CrearProfesorService service = new CrearProfesorService(usuarioRepository, profesorRepository);
+        CrearProfesorService service = new CrearProfesorService(usuarioRepository, profesorRepository, passwordHasher);
 
         Profesor profesor = service.crear(new CrearProfesorCommand(
                 "Josué",
@@ -40,7 +44,8 @@ class CrearProfesorYEstudianteServiceTest {
 
         assertThat(profesor.getUsuario()).isNotNull();
         assertThat(profesor.getUsuario().getUsername()).isEqualTo("josue2810");
-        assertThat(profesor.getUsuario().getPasswordHash()).isEqualTo("987654321");
+        assertThat(profesor.getUsuario().getPasswordHash()).isNotEqualTo("987654321");
+        assertThat(passwordHasher.matches("987654321", profesor.getUsuario().getPasswordHash())).isTrue();
         assertThat(profesor.getRol()).isEqualTo(Rol.PROFESOR);
         assertThat(profesor.getId()).isEqualTo(profesor.getUsuario().getId());
     }
@@ -51,7 +56,7 @@ class CrearProfesorYEstudianteServiceTest {
         InMemoryProfesorRepository profesorRepository = new InMemoryProfesorRepository();
         InMemoryEstudianteRepository estudianteRepository = new InMemoryEstudianteRepository();
 
-        CrearProfesorService profesorService = new CrearProfesorService(usuarioRepository, profesorRepository);
+        CrearProfesorService profesorService = new CrearProfesorService(usuarioRepository, profesorRepository, passwordHasher);
         Profesor profesor = profesorService.crear(new CrearProfesorCommand(
                 "María",
                 "López",
@@ -60,7 +65,7 @@ class CrearProfesorYEstudianteServiceTest {
                 "maria@example.com"
         ));
 
-        CrearEstudianteService estudianteService = new CrearEstudianteService(profesorRepository, estudianteRepository, usuarioRepository);
+        CrearEstudianteService estudianteService = new CrearEstudianteService(profesorRepository, estudianteRepository, usuarioRepository, passwordHasher);
         Estudiante estudiante = estudianteService.crear(profesor.getId(), new CrearEstudianteCommand(
                 "Ana",
                 "García",
@@ -76,6 +81,7 @@ class CrearProfesorYEstudianteServiceTest {
         assertThat(estudiante.getUsuario()).isNotNull();
         assertThat(estudiante.getUsuario().getId()).isEqualTo(estudiante.getId());
         assertThat(estudiante.getUsuario().getRol()).isEqualTo(Rol.ESTUDIANTE);
+        assertThat(passwordHasher.matches("222222222", estudiante.getUsuario().getPasswordHash())).isTrue();
     }
 
     @Test
@@ -83,7 +89,7 @@ class CrearProfesorYEstudianteServiceTest {
         InMemoryProfesorRepository profesorRepository = new InMemoryProfesorRepository();
         InMemoryEstudianteRepository estudianteRepository = new InMemoryEstudianteRepository();
         InMemoryUsuarioRepository usuarioRepository = new InMemoryUsuarioRepository();
-        CrearEstudianteService service = new CrearEstudianteService(profesorRepository, estudianteRepository, usuarioRepository);
+        CrearEstudianteService service = new CrearEstudianteService(profesorRepository, estudianteRepository, usuarioRepository, passwordHasher);
 
         assertThatThrownBy(() -> service.crear(UUID.randomUUID(), new CrearEstudianteCommand(
                 "Luis",
@@ -107,6 +113,13 @@ class CrearProfesorYEstudianteServiceTest {
         @Override
         public Optional<Usuario> findById(UUID id) {
             return Optional.ofNullable(usuarios.get(id));
+        }
+
+        @Override
+        public Optional<Usuario> findByUsername(String username) {
+            return usuarios.values().stream()
+                    .filter(u -> u.getUsername().equals(username))
+                    .findFirst();
         }
 
         @Override

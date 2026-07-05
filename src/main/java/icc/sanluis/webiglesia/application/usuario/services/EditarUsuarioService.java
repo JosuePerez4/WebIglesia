@@ -5,14 +5,17 @@ import java.util.UUID;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarUsuarioUseCase;
 import icc.sanluis.webiglesia.domain.usuario.model.Usuario;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.EditarUsuarioCommand;
+import icc.sanluis.webiglesia.domain.usuario.ports.out.PasswordHasherPort;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.UsuarioRepositoryPort;
 
 public class EditarUsuarioService implements EditarUsuarioUseCase {
 
     private final UsuarioRepositoryPort usuarioRepository;
+    private final PasswordHasherPort passwordHasher;
 
-    public EditarUsuarioService(UsuarioRepositoryPort usuarioRepository) {
+    public EditarUsuarioService(UsuarioRepositoryPort usuarioRepository, PasswordHasherPort passwordHasher) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordHasher = passwordHasher;
     }
 
     @Override
@@ -21,7 +24,7 @@ public class EditarUsuarioService implements EditarUsuarioUseCase {
                 .orElseThrow(() -> new RuntimeException("El usuario no existe"));
 
         usuarioAEditar.setUsername(usuario.nombreusuario());
-        usuarioAEditar.setPasswordHash(usuario.contrasena());
+        usuarioAEditar.setPasswordHash(passwordHasher.hash(usuario.contrasena()));
 
         return usuarioRepository.save(usuarioAEditar);
     }

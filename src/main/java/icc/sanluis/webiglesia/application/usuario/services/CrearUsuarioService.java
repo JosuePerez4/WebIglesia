@@ -7,14 +7,17 @@ import java.util.UUID;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearUsuarioUseCase;
 import icc.sanluis.webiglesia.domain.usuario.model.Usuario;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.CrearUsuarioCommand;
+import icc.sanluis.webiglesia.domain.usuario.ports.out.PasswordHasherPort;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.UsuarioRepositoryPort;
 
 public class CrearUsuarioService implements CrearUsuarioUseCase {
 
     private final UsuarioRepositoryPort usuarioRepository;
+    private final PasswordHasherPort passwordHasher;
 
-    public CrearUsuarioService(UsuarioRepositoryPort usuarioRepository) {
+    public CrearUsuarioService(UsuarioRepositoryPort usuarioRepository, PasswordHasherPort passwordHasher) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordHasher = passwordHasher;
     }
 
     @Override
@@ -31,7 +34,7 @@ public class CrearUsuarioService implements CrearUsuarioUseCase {
         Usuario nuevoUsuario = new Usuario(
                 UUID.randomUUID(),
                 usuario.nombreusuario().trim(),
-                usuario.contrasena(),
+                passwordHasher.hash(usuario.contrasena()),
                 usuario.rol(),
                 true,
                 OffsetDateTime.now()
