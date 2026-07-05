@@ -146,6 +146,11 @@ class CrearProfesorYEstudianteServiceTest {
         public boolean existsById(UUID id) {
             return profesores.containsKey(id);
         }
+
+        @Override
+        public List<Profesor> findAll() {
+            return new ArrayList<>(profesores.values());
+        }
     }
 
     private static class InMemoryEstudianteRepository implements EstudianteRepositoryPort {

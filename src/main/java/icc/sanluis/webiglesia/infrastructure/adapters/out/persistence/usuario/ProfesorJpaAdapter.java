@@ -44,4 +44,11 @@ public class ProfesorJpaAdapter implements ProfesorRepositoryPort {
     public boolean existsById(UUID id) {
         return repository.existsById(id);
     }
+
+    @Override
+    public java.util.List<Profesor> findAll() {
+        return repository.findAll().stream()
+                .map(this::enriquecerConUsuario)
+                .collect(java.util.stream.Collectors.toList());
+    }
 }

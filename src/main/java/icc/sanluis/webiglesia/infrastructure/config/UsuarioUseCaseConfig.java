@@ -8,6 +8,7 @@ import icc.sanluis.webiglesia.application.usuario.services.CrearEstudianteServic
 import icc.sanluis.webiglesia.application.usuario.services.CrearProfesorService;
 import icc.sanluis.webiglesia.application.usuario.services.CrearUsuarioService;
 import icc.sanluis.webiglesia.application.usuario.services.EditarProfesorService;
+import icc.sanluis.webiglesia.application.usuario.services.ObtenerProfesorService;
 import icc.sanluis.webiglesia.application.usuario.services.EditarUsuarioService;
 import icc.sanluis.webiglesia.application.usuario.services.LoginService;
 import icc.sanluis.webiglesia.application.usuario.services.CrearGrupoService;
@@ -23,6 +24,7 @@ import icc.sanluis.webiglesia.application.usuario.usecases.CrearEstudianteUseCas
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearProfesorUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearUsuarioUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarProfesorUseCase;
+import icc.sanluis.webiglesia.application.usuario.usecases.ObtenerProfesorUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarUsuarioUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.LoginUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearGrupoUseCase;
@@ -75,6 +77,11 @@ public class UsuarioUseCaseConfig {
     @Bean
     public EditarProfesorUseCase editarProfesorUseCase(ProfesorRepositoryPort profesorRepositoryPort) {
         return new EditarProfesorService(profesorRepositoryPort);
+    }
+
+    @Bean
+    public ObtenerProfesorUseCase obtenerProfesorUseCase(ProfesorRepositoryPort profesorRepositoryPort) {
+        return new ObtenerProfesorService(profesorRepositoryPort);
     }
 
     @Bean

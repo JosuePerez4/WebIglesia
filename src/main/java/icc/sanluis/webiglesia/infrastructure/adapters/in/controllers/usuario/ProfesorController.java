@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearEstudianteUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearProfesorUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarProfesorUseCase;
+import icc.sanluis.webiglesia.application.usuario.usecases.ObtenerProfesorUseCase;
 import icc.sanluis.webiglesia.domain.usuario.model.Estudiante;
 import icc.sanluis.webiglesia.domain.usuario.model.Profesor;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.CrearEstudianteCommand;
@@ -33,14 +35,30 @@ public class ProfesorController {
 
     private final CrearProfesorUseCase crearProfesorUseCase;
     private final EditarProfesorUseCase editarProfesorUseCase;
+    private final ObtenerProfesorUseCase obtenerProfesorUseCase;
     private final CrearEstudianteUseCase crearEstudianteUseCase;
 
     public ProfesorController(CrearProfesorUseCase crearProfesorUseCase,
                               EditarProfesorUseCase editarProfesorUseCase,
+                              ObtenerProfesorUseCase obtenerProfesorUseCase,
                               CrearEstudianteUseCase crearEstudianteUseCase) {
         this.crearProfesorUseCase = crearProfesorUseCase;
         this.editarProfesorUseCase = editarProfesorUseCase;
+        this.obtenerProfesorUseCase = obtenerProfesorUseCase;
         this.crearEstudianteUseCase = crearEstudianteUseCase;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ProfesorResponse>> obtenerTodos() {
+        List<Profesor> profesores = obtenerProfesorUseCase.obtenerTodos();
+        return ResponseEntity.ok(profesores.stream().map(ProfesorResponse::fromDomain).toList());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProfesorResponse> obtenerPorId(@PathVariable UUID id) {
+        return obtenerProfesorUseCase.obtenerPorId(id)
+                .map(p -> ResponseEntity.ok(ProfesorResponse.fromDomain(p)))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping

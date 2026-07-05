@@ -1,5 +1,6 @@
 package icc.sanluis.webiglesia.domain.usuario.ports.out;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -9,4 +10,5 @@ public interface ProfesorRepositoryPort {
     Profesor save(Profesor profesor);
     Optional<Profesor> findById(UUID id);
     boolean existsById(UUID id);
+    List<Profesor> findAll();
 }
