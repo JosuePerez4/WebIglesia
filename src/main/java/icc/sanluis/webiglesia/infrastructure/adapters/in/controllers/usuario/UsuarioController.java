@@ -15,13 +15,17 @@ import org.springframework.web.bind.annotation.RestController;
 import icc.sanluis.webiglesia.application.usuario.usecases.CambiarEstadoUsuarioUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearUsuarioUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarUsuarioUseCase;
+import icc.sanluis.webiglesia.application.usuario.usecases.LoginUseCase;
 import icc.sanluis.webiglesia.domain.usuario.model.Usuario;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.CambiarEstadoUsuarioCommand;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.CrearUsuarioCommand;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.EditarUsuarioCommand;
+import icc.sanluis.webiglesia.domain.usuario.ports.in.LoginCommand;
 import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.CambiarEstadoUsuarioRequest;
 import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.CrearUsuarioRequest;
 import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.EditarUsuarioRequest;
+import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.LoginRequest;
+import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.LoginResponse;
 import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.UsuarioResponse;
 import jakarta.validation.Valid;
 
@@ -32,13 +36,22 @@ public class UsuarioController {
     private final CrearUsuarioUseCase crearUsuarioUseCase;
     private final EditarUsuarioUseCase editarUsuarioUseCase;
     private final CambiarEstadoUsuarioUseCase cambiarEstadoUsuarioUseCase;
+    private final LoginUseCase loginUseCase;
 
     public UsuarioController(CrearUsuarioUseCase crearUsuarioUseCase,
                              EditarUsuarioUseCase editarUsuarioUseCase,
-                             CambiarEstadoUsuarioUseCase cambiarEstadoUsuarioUseCase) {
+                             CambiarEstadoUsuarioUseCase cambiarEstadoUsuarioUseCase,
+                             LoginUseCase loginUseCase) {
         this.crearUsuarioUseCase = crearUsuarioUseCase;
         this.editarUsuarioUseCase = editarUsuarioUseCase;
         this.cambiarEstadoUsuarioUseCase = cambiarEstadoUsuarioUseCase;
+        this.loginUseCase = loginUseCase;
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+        Usuario usuario = loginUseCase.login(new LoginCommand(request.nombreusuario(), request.contrasena()));
+        return ResponseEntity.ok(LoginResponse.fromDomain(usuario));
     }
 
     @PostMapping("/crear")

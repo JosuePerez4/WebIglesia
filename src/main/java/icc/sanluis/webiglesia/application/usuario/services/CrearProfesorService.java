@@ -9,6 +9,7 @@ import icc.sanluis.webiglesia.domain.usuario.model.Profesor;
 import icc.sanluis.webiglesia.domain.usuario.model.Rol;
 import icc.sanluis.webiglesia.domain.usuario.model.Usuario;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.CrearProfesorCommand;
+import icc.sanluis.webiglesia.domain.usuario.ports.out.PasswordHasherPort;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.ProfesorRepositoryPort;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.UsuarioRepositoryPort;
 
@@ -16,10 +17,12 @@ public class CrearProfesorService implements CrearProfesorUseCase {
 
     private final UsuarioRepositoryPort usuarioRepository;
     private final ProfesorRepositoryPort profesorRepository;
+    private final PasswordHasherPort passwordHasher;
 
-    public CrearProfesorService(UsuarioRepositoryPort usuarioRepository, ProfesorRepositoryPort profesorRepository) {
+    public CrearProfesorService(UsuarioRepositoryPort usuarioRepository, ProfesorRepositoryPort profesorRepository, PasswordHasherPort passwordHasher) {
         this.usuarioRepository = usuarioRepository;
         this.profesorRepository = profesorRepository;
+        this.passwordHasher = passwordHasher;
     }
 
     @Override
@@ -32,7 +35,7 @@ public class CrearProfesorService implements CrearProfesorUseCase {
         Usuario usuario = new Usuario(
                 id,
                 username,
-                command.telefono(),
+                passwordHasher.hash(command.telefono()),
                 Rol.PROFESOR,
                 true,
                 OffsetDateTime.now()

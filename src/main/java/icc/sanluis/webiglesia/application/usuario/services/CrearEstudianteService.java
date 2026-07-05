@@ -13,6 +13,7 @@ import icc.sanluis.webiglesia.domain.usuario.model.Rol;
 import icc.sanluis.webiglesia.domain.usuario.model.Usuario;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.CrearEstudianteCommand;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.EstudianteRepositoryPort;
+import icc.sanluis.webiglesia.domain.usuario.ports.out.PasswordHasherPort;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.ProfesorRepositoryPort;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.UsuarioRepositoryPort;
 
@@ -21,13 +22,16 @@ public class CrearEstudianteService implements CrearEstudianteUseCase {
     private final ProfesorRepositoryPort profesorRepository;
     private final EstudianteRepositoryPort estudianteRepository;
     private final UsuarioRepositoryPort usuarioRepository;
+    private final PasswordHasherPort passwordHasher;
 
     public CrearEstudianteService(ProfesorRepositoryPort profesorRepository,
                                   EstudianteRepositoryPort estudianteRepository,
-                                  UsuarioRepositoryPort usuarioRepository) {
+                                  UsuarioRepositoryPort usuarioRepository,
+                                  PasswordHasherPort passwordHasher) {
         this.profesorRepository = profesorRepository;
         this.estudianteRepository = estudianteRepository;
         this.usuarioRepository = usuarioRepository;
+        this.passwordHasher = passwordHasher;
     }
 
     @Override
@@ -39,7 +43,8 @@ public class CrearEstudianteService implements CrearEstudianteUseCase {
         Estudiante estudiante = convertir(command);
         UUID id = UUID.randomUUID();
         String username = UsernameGenerator.generar(command.nombre(), command.fechaDeNacimiento(), id);
-        Usuario usuario = usuarioRepository.save(new Usuario(id, username, command.telefono(), Rol.ESTUDIANTE, true, OffsetDateTime.now()));
+        String contrasena = (command.telefono() != null && !command.telefono().isBlank()) ? command.telefono() : id.toString();
+        Usuario usuario = usuarioRepository.save(new Usuario(id, username, passwordHasher.hash(contrasena), Rol.ESTUDIANTE, true, OffsetDateTime.now()));
 
         // El estudiante comparte id con su usuario asociado.
         estudiante.setId(id);
