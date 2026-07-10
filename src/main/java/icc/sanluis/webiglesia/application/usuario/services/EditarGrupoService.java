@@ -36,31 +36,30 @@ public class EditarGrupoService implements EditarGrupoUseCase {
         }
 
         if (command.profesorIds() != null) {
-            // profesorIds son profesores a agregar al grupo; los que ya estaban se conservan.
-            List<Profesor> profesoresActuales = new ArrayList<>(grupoExistente.getProfesores());
+            // profesorIds representa la lista completa y definitiva de profesores del grupo:
+            // se agregan los nuevos y se desvinculan los que ya no vengan incluidos.
+            List<Profesor> profesoresNuevos = new ArrayList<>();
 
             for (UUID pId : command.profesorIds()) {
                 Profesor prof = profesorRepository.findById(pId)
                         .orElseThrow(() -> new IllegalArgumentException("Profesor no encontrado: " + pId));
-
-                boolean yaEstabaEnElGrupo = profesoresActuales.stream().anyMatch(p -> p.getId().equals(prof.getId()));
-                if (!yaEstabaEnElGrupo) {
-                    profesoresActuales.add(prof);
-                }
+                profesoresNuevos.add(prof);
             }
 
-            if (profesoresActuales.isEmpty() || profesoresActuales.size() > 2) {
+            if (profesoresNuevos.isEmpty() || profesoresNuevos.size() > 2) {
                 throw new IllegalArgumentException("Un grupo debe tener entre 1 y 2 profesores asignados");
             }
 
-            grupoExistente.setProfesores(profesoresActuales);
+            grupoExistente.setProfesores(profesoresNuevos);
         }
 
         if (command.estudianteIds() != null) {
             boolean force = command.forzarCambioGrupo() != null && command.forzarCambioGrupo();
 
-            // estudianteIds son estudiantes a agregar al grupo; los que ya estaban se conservan.
-            List<Estudiante> estudiantesActuales = new ArrayList<>(grupoExistente.getEstudiantes());
+            // estudianteIds representa la lista completa y definitiva de estudiantes del grupo:
+            // se agregan los nuevos y se desvinculan (grupoId = null) los que ya no vengan incluidos.
+            List<Estudiante> estudiantesActuales = grupoExistente.getEstudiantes();
+            List<Estudiante> estudiantesNuevos = new ArrayList<>();
 
             for (UUID eId : command.estudianteIds()) {
                 Estudiante est = estudianteRepository.findById(eId)
@@ -73,13 +72,18 @@ public class EditarGrupoService implements EditarGrupoUseCase {
 
                 est.setGrupoId(id);
                 estudianteRepository.save(est);
+                estudiantesNuevos.add(est);
+            }
 
-                boolean yaEstabaEnElGrupo = estudiantesActuales.stream().anyMatch(e -> e.getId().equals(est.getId()));
-                if (!yaEstabaEnElGrupo) {
-                    estudiantesActuales.add(est);
+            for (Estudiante estActual : estudiantesActuales) {
+                boolean sigueEnElGrupo = estudiantesNuevos.stream().anyMatch(e -> e.getId().equals(estActual.getId()));
+                if (!sigueEnElGrupo) {
+                    estActual.setGrupoId(null);
+                    estudianteRepository.save(estActual);
                 }
             }
-            grupoExistente.setEstudiantes(estudiantesActuales);
+
+            grupoExistente.setEstudiantes(estudiantesNuevos);
         }
 
         return grupoRepository.save(grupoExistente);
