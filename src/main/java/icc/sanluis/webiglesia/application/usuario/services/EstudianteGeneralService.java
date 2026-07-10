@@ -4,7 +4,6 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearEstudianteGeneralUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarEstudianteUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.ObtenerEstudianteUseCase;
@@ -91,11 +90,21 @@ public class EstudianteGeneralService implements CrearEstudianteGeneralUseCase, 
     }
 
     @Override
+    public List<Estudiante> obtenerPorActivo(boolean activo) {
+        return estudianteRepository.findByActivo(activo);
+    }
+
+    @Override
     public List<Estudiante> buscarPorNombreOApellido(String query) {
-        String cleanQuery = query != null ? query.toLowerCase().trim() : "";
-        return estudianteRepository.findAll().stream()
-                .filter(e -> (e.getNombre() != null && e.getNombre().toLowerCase().contains(cleanQuery)) ||
-                             (e.getApellido() != null && e.getApellido().toLowerCase().contains(cleanQuery)))
-                .collect(Collectors.toList());
+        return estudianteRepository.buscarPorNombreOApellido(limpiar(query));
+    }
+
+    @Override
+    public List<Estudiante> buscarPorNombreOApellidoYActivo(String query, boolean activo) {
+        return estudianteRepository.buscarPorNombreOApellidoYActivo(limpiar(query), activo);
+    }
+
+    private String limpiar(String query) {
+        return query != null ? query.trim() : "";
     }
 }

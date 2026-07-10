@@ -28,6 +28,9 @@ public class EstudianteMapper {
         estudiante.setFechaDeNacimiento(entity.getFechaDeNacimiento());
         estudiante.setCorreo(entity.getCorreo());
         estudiante.setGrupoId(entity.getGrupoId());
+        if (entity.getUsuario() != null) {
+            estudiante.setUsuario(UsuarioMapper.toDomain(entity.getUsuario()));
+        }
         return estudiante;
     }
 }

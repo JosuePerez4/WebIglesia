@@ -11,4 +11,5 @@ public interface ProfesorRepositoryPort {
     Optional<Profesor> findById(UUID id);
     boolean existsById(UUID id);
     List<Profesor> findAll();
+    List<Profesor> findByActivo(boolean activo);
 }

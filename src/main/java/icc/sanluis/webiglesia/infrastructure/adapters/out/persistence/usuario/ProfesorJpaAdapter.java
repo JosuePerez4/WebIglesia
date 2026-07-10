@@ -1,13 +1,14 @@
 package icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.usuario;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
 import icc.sanluis.webiglesia.domain.usuario.model.Profesor;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.ProfesorRepositoryPort;
-import icc.sanluis.webiglesia.domain.usuario.ports.out.UsuarioRepositoryPort;
 import icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.entities.ProfesorEntity;
 import icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.repositories.SpringDataProfesorRepository;
 
@@ -15,29 +16,26 @@ import icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.repositori
 public class ProfesorJpaAdapter implements ProfesorRepositoryPort {
 
     private final SpringDataProfesorRepository repository;
-    private final UsuarioRepositoryPort usuarioRepository;
 
-    public ProfesorJpaAdapter(SpringDataProfesorRepository repository, UsuarioRepositoryPort usuarioRepository) {
+    public ProfesorJpaAdapter(SpringDataProfesorRepository repository) {
         this.repository = repository;
-        this.usuarioRepository = usuarioRepository;
     }
 
     @Override
     public Profesor save(Profesor profesor) {
         ProfesorEntity entity = ProfesorMapper.toEntity(profesor);
-        return enriquecerConUsuario(repository.save(entity));
+        Profesor guardado = ProfesorMapper.toDomain(repository.save(entity));
+        // La asociación con usuario es de solo lectura: tras un insert nuevo no viene poblada,
+        // así que se conserva el usuario que ya traía el objeto de dominio.
+        if (guardado.getUsuario() == null) {
+            guardado.setUsuario(profesor.getUsuario());
+        }
+        return guardado;
     }
 
     @Override
     public Optional<Profesor> findById(UUID id) {
-        return repository.findById(id).map(this::enriquecerConUsuario);
-    }
-
-    // El id del profesor es el mismo que el de su usuario asociado: se busca por ese id.
-    private Profesor enriquecerConUsuario(ProfesorEntity entity) {
-        Profesor profesor = ProfesorMapper.toDomain(entity);
-        usuarioRepository.findById(entity.getId()).ifPresent(profesor::setUsuario);
-        return profesor;
+        return repository.findById(id).map(ProfesorMapper::toDomain);
     }
 
     @Override
@@ -46,9 +44,16 @@ public class ProfesorJpaAdapter implements ProfesorRepositoryPort {
     }
 
     @Override
-    public java.util.List<Profesor> findAll() {
+    public List<Profesor> findAll() {
         return repository.findAll().stream()
-                .map(this::enriquecerConUsuario)
-                .collect(java.util.stream.Collectors.toList());
+                .map(ProfesorMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Profesor> findByActivo(boolean activo) {
+        return repository.findByUsuarioActivo(activo).stream()
+                .map(ProfesorMapper::toDomain)
+                .collect(Collectors.toList());
     }
 }

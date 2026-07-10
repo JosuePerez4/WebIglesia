@@ -24,4 +24,9 @@ public class ObtenerProfesorService implements ObtenerProfesorUseCase {
     public List<Profesor> obtenerTodos() {
         return profesorRepository.findAll();
     }
+
+    @Override
+    public List<Profesor> obtenerPorActivo(boolean activo) {
+        return profesorRepository.findByActivo(activo);
+    }
 }

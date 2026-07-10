@@ -11,6 +11,7 @@ import icc.sanluis.webiglesia.application.usuario.services.EditarProfesorService
 import icc.sanluis.webiglesia.application.usuario.services.ObtenerProfesorService;
 import icc.sanluis.webiglesia.application.usuario.services.EditarUsuarioService;
 import icc.sanluis.webiglesia.application.usuario.services.LoginService;
+import icc.sanluis.webiglesia.application.usuario.services.ObtenerUsuarioService;
 import icc.sanluis.webiglesia.application.usuario.services.CrearGrupoService;
 import icc.sanluis.webiglesia.application.usuario.services.EditarGrupoService;
 import icc.sanluis.webiglesia.application.usuario.services.ObtenerGrupoService;
@@ -27,6 +28,7 @@ import icc.sanluis.webiglesia.application.usuario.usecases.EditarProfesorUseCase
 import icc.sanluis.webiglesia.application.usuario.usecases.ObtenerProfesorUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarUsuarioUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.LoginUseCase;
+import icc.sanluis.webiglesia.application.usuario.usecases.ObtenerUsuarioUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearGrupoUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarGrupoUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.ObtenerGrupoUseCase;
@@ -65,6 +67,11 @@ public class UsuarioUseCaseConfig {
     @Bean
     public LoginUseCase loginUseCase(UsuarioRepositoryPort usuarioRepositoryPort, PasswordHasherPort passwordHasherPort) {
         return new LoginService(usuarioRepositoryPort, passwordHasherPort);
+    }
+
+    @Bean
+    public ObtenerUsuarioUseCase obtenerUsuarioUseCase(UsuarioRepositoryPort usuarioRepositoryPort) {
+        return new ObtenerUsuarioService(usuarioRepositoryPort);
     }
 
     @Bean

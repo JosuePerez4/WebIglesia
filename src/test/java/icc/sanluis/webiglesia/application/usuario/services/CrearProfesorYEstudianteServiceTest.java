@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -151,6 +152,13 @@ class CrearProfesorYEstudianteServiceTest {
         public List<Profesor> findAll() {
             return new ArrayList<>(profesores.values());
         }
+
+        @Override
+        public List<Profesor> findByActivo(boolean activo) {
+            return profesores.values().stream()
+                    .filter(p -> p.getUsuario() != null && p.getUsuario().isActivo() == activo)
+                    .collect(Collectors.toList());
+        }
     }
 
     private static class InMemoryEstudianteRepository implements EstudianteRepositoryPort {
@@ -180,6 +188,29 @@ class CrearProfesorYEstudianteServiceTest {
         @Override
         public List<Estudiante> findAll() {
             return new ArrayList<>(estudiantes.values());
+        }
+
+        @Override
+        public List<Estudiante> findByActivo(boolean activo) {
+            return estudiantes.values().stream()
+                    .filter(e -> e.getUsuario() != null && e.getUsuario().isActivo() == activo)
+                    .collect(Collectors.toList());
+        }
+
+        @Override
+        public List<Estudiante> buscarPorNombreOApellido(String query) {
+            String q = query.toLowerCase();
+            return estudiantes.values().stream()
+                    .filter(e -> (e.getNombre() != null && e.getNombre().toLowerCase().contains(q)) ||
+                                 (e.getApellido() != null && e.getApellido().toLowerCase().contains(q)))
+                    .collect(Collectors.toList());
+        }
+
+        @Override
+        public List<Estudiante> buscarPorNombreOApellidoYActivo(String query, boolean activo) {
+            return buscarPorNombreOApellido(query).stream()
+                    .filter(e -> e.getUsuario() != null && e.getUsuario().isActivo() == activo)
+                    .collect(Collectors.toList());
         }
     }
 }
