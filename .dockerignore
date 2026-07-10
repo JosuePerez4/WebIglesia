@@ -1,0 +1,8 @@
+.git
+.gitattributes
+.gitignore
+.env
+target
+HELP.md
+implementation_plan.md
+*.md
