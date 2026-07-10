@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearGrupoUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarGrupoUseCase;
@@ -68,8 +69,10 @@ public class GrupoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GrupoResponse>> obtenerTodos() {
-        List<Grupo> grupos = obtenerGrupoUseCase.obtenerTodos();
+    public ResponseEntity<List<GrupoResponse>> obtenerTodos(@RequestParam(required = false) String query) {
+        List<Grupo> grupos = (query != null && !query.isBlank())
+                ? obtenerGrupoUseCase.buscarPorNombre(query.trim())
+                : obtenerGrupoUseCase.obtenerTodos();
         return ResponseEntity.ok(grupos.stream().map(GrupoResponse::fromDomain).toList());
     }
 

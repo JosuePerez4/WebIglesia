@@ -24,4 +24,14 @@ public class ObtenerGrupoService implements ObtenerGrupoUseCase {
     public List<Grupo> obtenerTodos() {
         return grupoRepository.findAll();
     }
+
+    @Override
+    public List<Grupo> obtenerPorProfesor(UUID profesorId) {
+        return grupoRepository.findByProfesorId(profesorId);
+    }
+
+    @Override
+    public List<Grupo> buscarPorNombre(String query) {
+        return grupoRepository.buscarPorNombre(query);
+    }
 }

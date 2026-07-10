@@ -24,6 +24,9 @@ public class ProfesorMapper {
         profesor.setTelefono(entity.getTelefono());
         profesor.setFechaDeNacimiento(entity.getFechaDeNacimiento());
         profesor.setCorreo(entity.getCorreo());
+        if (entity.getUsuario() != null) {
+            profesor.setUsuario(UsuarioMapper.toDomain(entity.getUsuario()));
+        }
         return profesor;
     }
 }

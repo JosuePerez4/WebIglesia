@@ -13,7 +13,7 @@ public record ProfesorResponse(
         LocalDate fechaDeNacimiento,
         String correo,
         String username,
-        String passwordHash
+        boolean activo
 ) {
     public static ProfesorResponse fromDomain(Profesor profesor) {
         return new ProfesorResponse(
@@ -24,7 +24,7 @@ public record ProfesorResponse(
                 profesor.getFechaDeNacimiento(),
                 profesor.getCorreo(),
                 profesor.getUsuario() != null ? profesor.getUsuario().getUsername() : null,
-                profesor.getUsuario() != null ? profesor.getUsuario().getPasswordHash() : null
+                profesor.getUsuario() != null && profesor.getUsuario().isActivo()
         );
     }
 }

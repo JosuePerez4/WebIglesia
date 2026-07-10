@@ -8,4 +8,5 @@ import icc.sanluis.webiglesia.domain.usuario.model.Profesor;
 public interface ObtenerProfesorUseCase {
     Optional<Profesor> obtenerPorId(UUID id);
     List<Profesor> obtenerTodos();
+    List<Profesor> obtenerPorActivo(boolean activo);
 }

@@ -70,11 +70,19 @@ public class EstudianteController {
         return ResponseEntity.ok(toResponse(editado));
     }
 
+    // Por defecto solo se listan activos; ?activo=false trae desactivados y ?activo=all trae todos.
     @GetMapping
-    public ResponseEntity<List<EstudianteGeneralResponse>> obtenerTodos(@RequestParam(required = false) String query) {
+    public ResponseEntity<List<EstudianteGeneralResponse>> obtenerTodos(@RequestParam(required = false) String query,
+                                                                        @RequestParam(required = false, defaultValue = "true") String activo) {
+        Boolean filtroActivo = "all".equalsIgnoreCase(activo) ? null : Boolean.valueOf(activo);
+        boolean hayQuery = query != null && !query.isBlank();
         List<Estudiante> estudiantes;
-        if (query != null && !query.isBlank()) {
+        if (hayQuery && filtroActivo != null) {
+            estudiantes = obtenerEstudianteUseCase.buscarPorNombreOApellidoYActivo(query, filtroActivo);
+        } else if (hayQuery) {
             estudiantes = obtenerEstudianteUseCase.buscarPorNombreOApellido(query);
+        } else if (filtroActivo != null) {
+            estudiantes = obtenerEstudianteUseCase.obtenerPorActivo(filtroActivo);
         } else {
             estudiantes = obtenerEstudianteUseCase.obtenerTodos();
         }
@@ -105,7 +113,7 @@ public class EstudianteController {
                 estudiante.getGrupoId(),
                 nombreGrupo,
                 estudiante.getUsuario() != null ? estudiante.getUsuario().getUsername() : null,
-                estudiante.getUsuario() != null ? estudiante.getUsuario().getPasswordHash() : null
+                estudiante.getUsuario() != null && estudiante.getUsuario().isActivo()
         );
     }
 }

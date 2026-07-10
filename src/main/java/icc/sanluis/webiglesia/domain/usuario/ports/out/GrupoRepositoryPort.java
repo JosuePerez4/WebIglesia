@@ -9,6 +9,8 @@ public interface GrupoRepositoryPort {
     Grupo save(Grupo grupo);
     Optional<Grupo> findById(UUID id);
     List<Grupo> findAll();
+    List<Grupo> findByProfesorId(UUID profesorId);
+    List<Grupo> buscarPorNombre(String query);
     void deleteById(UUID id);
     boolean existsById(UUID id);
 }

@@ -1,7 +1,6 @@
 package icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.usuario;
 
 import icc.sanluis.webiglesia.domain.usuario.model.Administrador;
-import icc.sanluis.webiglesia.domain.usuario.model.Usuario;
 import icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.entities.AdministradorEntity;
 
 public class AdministradorMapper {
@@ -15,7 +14,7 @@ public class AdministradorMapper {
         entity.setTelefono(administrador.getTelefono());
         entity.setFechaDeNacimiento(administrador.getFechaDeNacimiento());
         entity.setCorreo(administrador.getCorreo());
-        entity.setUsuarioId(administrador.getUsuario() != null ? administrador.getUsuario().getId() : null);
+        entity.setUsuario(administrador.getUsuario() != null ? UsuarioMapper.toEntity(administrador.getUsuario()) : null);
         return entity;
     }
 
@@ -28,10 +27,8 @@ public class AdministradorMapper {
         administrador.setTelefono(entity.getTelefono());
         administrador.setFechaDeNacimiento(entity.getFechaDeNacimiento());
         administrador.setCorreo(entity.getCorreo());
-        if (entity.getUsuarioId() != null) {
-            Usuario usuario = new Usuario();
-            usuario.setId(entity.getUsuarioId());
-            administrador.setUsuario(usuario);
+        if (entity.getUsuario() != null) {
+            administrador.setUsuario(UsuarioMapper.toDomain(entity.getUsuario()));
         }
         return administrador;
     }

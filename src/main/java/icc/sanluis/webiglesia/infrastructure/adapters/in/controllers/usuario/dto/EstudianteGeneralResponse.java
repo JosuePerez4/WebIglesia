@@ -13,5 +13,5 @@ public record EstudianteGeneralResponse(
     UUID grupoId,
     String nombreGrupo,
     String username,
-    String passwordHash
+    boolean activo
 ) {}

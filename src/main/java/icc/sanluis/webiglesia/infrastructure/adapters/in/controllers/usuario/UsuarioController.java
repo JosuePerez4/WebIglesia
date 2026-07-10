@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import icc.sanluis.webiglesia.application.usuario.usecases.CambiarEstadoUsuarioU
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearUsuarioUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarUsuarioUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.LoginUseCase;
+import icc.sanluis.webiglesia.application.usuario.usecases.ObtenerUsuarioUseCase;
 import icc.sanluis.webiglesia.domain.usuario.model.Usuario;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.CambiarEstadoUsuarioCommand;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.CrearUsuarioCommand;
@@ -37,15 +39,26 @@ public class UsuarioController {
     private final EditarUsuarioUseCase editarUsuarioUseCase;
     private final CambiarEstadoUsuarioUseCase cambiarEstadoUsuarioUseCase;
     private final LoginUseCase loginUseCase;
+    private final ObtenerUsuarioUseCase obtenerUsuarioUseCase;
 
     public UsuarioController(CrearUsuarioUseCase crearUsuarioUseCase,
                              EditarUsuarioUseCase editarUsuarioUseCase,
                              CambiarEstadoUsuarioUseCase cambiarEstadoUsuarioUseCase,
-                             LoginUseCase loginUseCase) {
+                             LoginUseCase loginUseCase,
+                             ObtenerUsuarioUseCase obtenerUsuarioUseCase) {
         this.crearUsuarioUseCase = crearUsuarioUseCase;
         this.editarUsuarioUseCase = editarUsuarioUseCase;
         this.cambiarEstadoUsuarioUseCase = cambiarEstadoUsuarioUseCase;
         this.loginUseCase = loginUseCase;
+        this.obtenerUsuarioUseCase = obtenerUsuarioUseCase;
+    }
+
+    // TODO: proteger con rol de administrador cuando exista la capa de seguridad.
+    @GetMapping("/{id}")
+    public ResponseEntity<UsuarioResponse> obtenerPorId(@PathVariable UUID id) {
+        return obtenerUsuarioUseCase.obtenerPorId(id)
+                .map(u -> ResponseEntity.ok(UsuarioResponse.fromDomain(u)))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/login")

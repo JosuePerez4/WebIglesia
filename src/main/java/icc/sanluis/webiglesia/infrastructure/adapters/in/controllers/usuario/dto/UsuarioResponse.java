@@ -9,7 +9,6 @@ import icc.sanluis.webiglesia.domain.usuario.model.Usuario;
 public record UsuarioResponse(
         UUID id,
         String username,
-        String passwordHash,
         Rol rol,
         boolean activo,
         OffsetDateTime createdAt
@@ -19,7 +18,6 @@ public record UsuarioResponse(
         return new UsuarioResponse(
                 usuario.getId(),
                 usuario.getUsername(),
-                usuario.getPasswordHash(),
                 usuario.getRol(),
                 usuario.isActivo(),
                 usuario.getDiaIngreso()

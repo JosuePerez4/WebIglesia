@@ -38,6 +38,20 @@ public class GrupoJpaAdapter implements GrupoRepositoryPort {
     }
 
     @Override
+    public List<Grupo> findByProfesorId(UUID profesorId) {
+        return repository.findByProfesorId(profesorId).stream()
+                .map(GrupoMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Grupo> buscarPorNombre(String query) {
+        return repository.buscarPorNombre(query).stream()
+                .map(GrupoMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public void deleteById(UUID id) {
         repository.deleteById(id);
     }
