@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import icc.sanluis.webiglesia.application.usuario.services.CambiarEstadoUSuarioService;
+import icc.sanluis.webiglesia.application.usuario.services.CrearAdministradorService;
 import icc.sanluis.webiglesia.application.usuario.services.CrearEstudianteService;
 import icc.sanluis.webiglesia.application.usuario.services.CrearProfesorService;
 import icc.sanluis.webiglesia.application.usuario.services.CrearUsuarioService;
@@ -21,6 +22,7 @@ import icc.sanluis.webiglesia.application.usuario.services.ObtenerAsistenciaServ
 import icc.sanluis.webiglesia.application.usuario.services.EstudianteGeneralService;
 
 import icc.sanluis.webiglesia.application.usuario.usecases.CambiarEstadoUsuarioUseCase;
+import icc.sanluis.webiglesia.application.usuario.usecases.CrearAdministradorUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearEstudianteUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearProfesorUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearUsuarioUseCase;
@@ -39,6 +41,7 @@ import icc.sanluis.webiglesia.application.usuario.usecases.CrearEstudianteGenera
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarEstudianteUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.ObtenerEstudianteUseCase;
 
+import icc.sanluis.webiglesia.domain.usuario.ports.out.AdministradorRepositoryPort;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.EstudianteRepositoryPort;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.PasswordHasherPort;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.ProfesorRepositoryPort;
@@ -79,6 +82,13 @@ public class UsuarioUseCaseConfig {
                                                      ProfesorRepositoryPort profesorRepositoryPort,
                                                      PasswordHasherPort passwordHasherPort) {
         return new CrearProfesorService(usuarioRepositoryPort, profesorRepositoryPort, passwordHasherPort);
+    }
+
+    @Bean
+    public CrearAdministradorUseCase crearAdministradorUseCase(UsuarioRepositoryPort usuarioRepositoryPort,
+                                                              AdministradorRepositoryPort administradorRepositoryPort,
+                                                              PasswordHasherPort passwordHasherPort) {
+        return new CrearAdministradorService(usuarioRepositoryPort, administradorRepositoryPort, passwordHasherPort);
     }
 
     @Bean

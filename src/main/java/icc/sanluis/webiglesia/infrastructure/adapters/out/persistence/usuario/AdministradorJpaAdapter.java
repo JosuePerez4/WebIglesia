@@ -20,7 +20,11 @@ public class AdministradorJpaAdapter implements AdministradorRepositoryPort {
     @Override
     public Administrador save(Administrador administrador) {
         AdministradorEntity entity = AdministradorMapper.toEntity(administrador);
-        return AdministradorMapper.toDomain(repository.save(entity));
+        Administrador guardado = AdministradorMapper.toDomain(repository.save(entity));
+        if (guardado.getUsuario() == null) {
+            guardado.setUsuario(administrador.getUsuario());
+        }
+        return guardado;
     }
 
     @Override

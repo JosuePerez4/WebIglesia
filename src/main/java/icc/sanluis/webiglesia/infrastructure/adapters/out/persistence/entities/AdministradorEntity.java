@@ -13,8 +13,9 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Table(name = "administrador")
 public class AdministradorEntity extends Persona {
-    // A diferencia de profesor/estudiante, el administrador guarda la referencia en su propia columna usuario_id.
+    // El id (heredado de Persona) es el mismo UUID que el del Usuario asociado.
+    // La asociación se mapea sobre esa misma columna solo para lectura: el id se sigue asignando directamente.
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "id", insertable = false, updatable = false)
     private UsuarioEntity usuario;
 }

@@ -14,7 +14,6 @@ public class AdministradorMapper {
         entity.setTelefono(administrador.getTelefono());
         entity.setFechaDeNacimiento(administrador.getFechaDeNacimiento());
         entity.setCorreo(administrador.getCorreo());
-        entity.setUsuario(administrador.getUsuario() != null ? UsuarioMapper.toEntity(administrador.getUsuario()) : null);
         return entity;
     }
 
