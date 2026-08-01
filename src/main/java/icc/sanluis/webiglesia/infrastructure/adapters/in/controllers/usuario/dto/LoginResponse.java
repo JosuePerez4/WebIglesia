@@ -9,14 +9,16 @@ public record LoginResponse(
     UUID id,
     String username,
     Rol rol,
-    boolean activo
+    boolean activo,
+    String token
 ) {
-    public static LoginResponse fromDomain(Usuario usuario) {
+    public static LoginResponse fromDomain(Usuario usuario, String token) {
         return new LoginResponse(
                 usuario.getId(),
                 usuario.getUsername(),
                 usuario.getRol(),
-                usuario.isActivo()
+                usuario.isActivo(),
+                token
         );
     }
 }

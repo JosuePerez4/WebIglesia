@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     public record ErrorResponse(String message, Map<String, String> errors) {
-        static ErrorResponse of(String message) {
+        public static ErrorResponse of(String message) {
             return new ErrorResponse(message, Map.of());
         }
     }

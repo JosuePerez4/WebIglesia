@@ -25,6 +25,7 @@ import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto
 import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.LoginRequest;
 import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.LoginResponse;
 import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.UsuarioResponse;
+import icc.sanluis.webiglesia.infrastructure.adapters.out.security.JwtService;
 import jakarta.validation.Valid;
 
 
@@ -35,18 +36,20 @@ public class UsuarioController {
     private final CambiarEstadoUsuarioUseCase cambiarEstadoUsuarioUseCase;
     private final LoginUseCase loginUseCase;
     private final ObtenerUsuarioUseCase obtenerUsuarioUseCase;
+    private final JwtService jwtService;
 
     public UsuarioController(EditarUsuarioUseCase editarUsuarioUseCase,
                              CambiarEstadoUsuarioUseCase cambiarEstadoUsuarioUseCase,
                              LoginUseCase loginUseCase,
-                             ObtenerUsuarioUseCase obtenerUsuarioUseCase) {
+                             ObtenerUsuarioUseCase obtenerUsuarioUseCase,
+                             JwtService jwtService) {
         this.editarUsuarioUseCase = editarUsuarioUseCase;
         this.cambiarEstadoUsuarioUseCase = cambiarEstadoUsuarioUseCase;
         this.loginUseCase = loginUseCase;
         this.obtenerUsuarioUseCase = obtenerUsuarioUseCase;
+        this.jwtService = jwtService;
     }
 
-    // TODO: proteger con rol de administrador cuando exista la capa de seguridad.
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioResponse> obtenerPorId(@PathVariable UUID id) {
         return obtenerUsuarioUseCase.obtenerPorId(id)
@@ -57,7 +60,8 @@ public class UsuarioController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         Usuario usuario = loginUseCase.login(new LoginCommand(request.nombreusuario(), request.contrasena()));
-        return ResponseEntity.ok(LoginResponse.fromDomain(usuario));
+        String token = jwtService.generarToken(usuario);
+        return ResponseEntity.ok(LoginResponse.fromDomain(usuario, token));
     }
 
     @PutMapping("/editar/{id}")
