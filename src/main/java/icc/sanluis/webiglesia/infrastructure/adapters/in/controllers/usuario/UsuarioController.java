@@ -3,6 +3,7 @@ package icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,6 +51,7 @@ public class UsuarioController {
         this.jwtService = jwtService;
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @authz.esPropioUsuario(#id)")
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioResponse> obtenerPorId(@PathVariable UUID id) {
         return obtenerUsuarioUseCase.obtenerPorId(id)
@@ -64,6 +66,7 @@ public class UsuarioController {
         return ResponseEntity.ok(LoginResponse.fromDomain(usuario, token));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @authz.esPropioUsuario(#id)")
     @PutMapping("/editar/{id}")
     public ResponseEntity<UsuarioResponse> editar(@PathVariable UUID id, @Valid @RequestBody EditarUsuarioRequest request) {
         EditarUsuarioCommand editado = new EditarUsuarioCommand(
@@ -74,6 +77,7 @@ public class UsuarioController {
         return ResponseEntity.ok(UsuarioResponse.fromDomain(usuarioActualizado));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("cambiar-estado/{id}")
     public ResponseEntity<UsuarioResponse> cambiarEstado(@PathVariable UUID id, @Valid @RequestBody CambiarEstadoUsuarioRequest request) {
         CambiarEstadoUsuarioCommand usuarioEstadoCambiado = new CambiarEstadoUsuarioCommand(

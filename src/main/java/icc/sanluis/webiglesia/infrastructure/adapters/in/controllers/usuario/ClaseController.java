@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +30,7 @@ public class ClaseController {
         this.obtenerAsistenciaUseCase = obtenerAsistenciaUseCase;
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @authz.esProfesorDelGrupo(#grupoId)")
     @PostMapping("/grupos/{grupoId}/clases")
     public ResponseEntity<ClaseResponse> registrarAsistencia(@PathVariable UUID grupoId, @Valid @RequestBody RegistrarAsistenciaRequest request) {
         List<RegistrarClaseAsistenciaCommand.EstudianteAsistencia> asistencias = request.asistencias().stream()
@@ -46,12 +48,14 @@ public class ClaseController {
                 .body(ClaseResponse.fromDomain(clase));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @authz.esProfesorDelGrupo(#grupoId)")
     @GetMapping("/grupos/{grupoId}/clases")
     public ResponseEntity<List<ClaseResponse>> obtenerClasesPorGrupo(@PathVariable UUID grupoId) {
         List<Clase> clases = obtenerAsistenciaUseCase.obtenerClasesPorGrupo(grupoId);
         return ResponseEntity.ok(clases.stream().map(ClaseResponse::fromDomain).toList());
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @authz.esProfesorDeLaClase(#id)")
     @GetMapping("/clases/{id}")
     public ResponseEntity<ClaseResponse> obtenerClasePorId(@PathVariable UUID id) {
         return obtenerAsistenciaUseCase.obtenerClasePorId(id)

@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -45,6 +46,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EstudianteNoPuedeIniciarSesionException.class)
     public ResponseEntity<ErrorResponse> handleEstudianteLogin(EstudianteNoPuedeIniciarSesionException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorResponse.of(ex.getMessage()));
+    }
+
+    // AccessDeniedException de @PreAuthorize se resuelve aquí (dentro del dispatch de MVC) antes de
+    // llegar al accessDeniedHandler de SecurityConfig, así que se mapea a 403 explícitamente.
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorResponse.of("No tiene permisos para esta acción"));
     }
 
     // Catch-all: nunca exponer el mensaje interno al cliente, solo loguearlo.

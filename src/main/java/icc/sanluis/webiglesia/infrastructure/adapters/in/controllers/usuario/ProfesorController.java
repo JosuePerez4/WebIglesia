@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,6 +57,7 @@ public class ProfesorController {
     }
 
     // Por defecto solo se listan activos; ?activo=false trae desactivados y ?activo=all trae todos.
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<ProfesorResponse>> obtenerTodos(@RequestParam(required = false, defaultValue = "true") String activo) {
         Boolean filtroActivo = "all".equalsIgnoreCase(activo) ? null : Boolean.valueOf(activo);
@@ -65,6 +67,7 @@ public class ProfesorController {
         return ResponseEntity.ok(profesores.stream().map(ProfesorResponse::fromDomain).toList());
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @authz.esPropioUsuario(#id)")
     @GetMapping("/{id}/grupos")
     public ResponseEntity<List<GrupoResponse>> obtenerGrupos(@PathVariable UUID id) {
         if (!obtenerProfesorUseCase.obtenerPorId(id).isPresent()) {
@@ -74,6 +77,7 @@ public class ProfesorController {
         return ResponseEntity.ok(grupos.stream().map(GrupoResponse::fromDomain).toList());
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @authz.esPropioUsuario(#id)")
     @GetMapping("/{id}")
     public ResponseEntity<ProfesorResponse> obtenerPorId(@PathVariable UUID id) {
         return obtenerProfesorUseCase.obtenerPorId(id)
@@ -81,6 +85,7 @@ public class ProfesorController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ProfesorResponse> crear(@Valid @RequestBody CrearProfesorRequest request) {
         Profesor profesor = crearProfesorUseCase.crear(new CrearProfesorCommand(
@@ -96,6 +101,7 @@ public class ProfesorController {
                 .body(ProfesorResponse.fromDomain(profesor));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @authz.esPropioUsuario(#id)")
     @PutMapping("/{id}")
     public ResponseEntity<ProfesorResponse> editar(@PathVariable UUID id, @Valid @RequestBody EditarProfesorRequest request) {
         Profesor profesor = editarProfesorUseCase.editar(id, new EditarProfesorCommand(
@@ -108,9 +114,9 @@ public class ProfesorController {
         return ResponseEntity.ok(ProfesorResponse.fromDomain(profesor));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @authz.esPropioUsuario(#profesorId)")
     @PostMapping("/{profesorId}/estudiantes")
     public ResponseEntity<EstudianteResponse> crearEstudiante(@PathVariable UUID profesorId, @Valid @RequestBody CrearEstudianteRequest request) {
-        // TODO: definir qué actor del sistema debe poder invocar este endpoint cuando se implemente la seguridad.
         Estudiante estudiante = crearEstudianteUseCase.crear(profesorId, new CrearEstudianteCommand(
                 request.nombre(),
                 request.apellido(),
@@ -124,9 +130,9 @@ public class ProfesorController {
                 .body(EstudianteResponse.fromDomain(estudiante));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @authz.esPropioUsuario(#profesorId)")
     @PostMapping("/{profesorId}/estudiantes/multiples")
     public ResponseEntity<List<EstudianteResponse>> crearEstudiantesMultiples(@PathVariable UUID profesorId, @Valid @RequestBody List<CrearEstudianteRequest> requests) {
-        // TODO: definir qué actor del sistema debe poder invocar este endpoint cuando se implemente la seguridad.
         List<Estudiante> estudiantes = crearEstudianteUseCase.crearMultiples(profesorId, requests.stream()
                 .map(request -> new CrearEstudianteCommand(
                         request.nombre(),

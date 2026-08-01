@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,6 +45,7 @@ public class GrupoController {
         this.eliminarGrupoUseCase = eliminarGrupoUseCase;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<GrupoResponse> crear(@Valid @RequestBody CrearGrupoRequest request) {
         Grupo grupo = crearGrupoUseCase.crear(new CrearGrupoCommand(
@@ -57,6 +59,7 @@ public class GrupoController {
                 .body(GrupoResponse.fromDomain(grupo));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<GrupoResponse> editar(@PathVariable UUID id, @Valid @RequestBody EditarGrupoRequest request) {
         Grupo grupo = editarGrupoUseCase.editar(id, new EditarGrupoCommand(
@@ -68,6 +71,7 @@ public class GrupoController {
         return ResponseEntity.ok(GrupoResponse.fromDomain(grupo));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESOR')")
     @GetMapping
     public ResponseEntity<List<GrupoResponse>> obtenerTodos(@RequestParam(required = false) String query) {
         List<Grupo> grupos = (query != null && !query.isBlank())
@@ -76,6 +80,7 @@ public class GrupoController {
         return ResponseEntity.ok(grupos.stream().map(GrupoResponse::fromDomain).toList());
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @authz.esProfesorDelGrupo(#id)")
     @GetMapping("/{id}")
     public ResponseEntity<GrupoResponse> obtenerPorId(@PathVariable UUID id) {
         return obtenerGrupoUseCase.obtenerPorId(id)
@@ -83,6 +88,7 @@ public class GrupoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable UUID id) {
         eliminarGrupoUseCase.eliminar(id);

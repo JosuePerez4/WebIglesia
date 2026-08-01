@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,6 +45,7 @@ public class EstudianteController {
         this.obtenerGrupoUseCase = obtenerGrupoUseCase;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESOR')")
     @PostMapping
     public ResponseEntity<EstudianteGeneralResponse> crear(@Valid @RequestBody CrearEstudianteRequest request) {
         Estudiante creado = crearEstudianteGeneralUseCase.crear(new CrearEstudianteCommand(
@@ -58,6 +60,7 @@ public class EstudianteController {
                 .body(toResponse(creado));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESOR')")
     @PutMapping("/{id}")
     public ResponseEntity<EstudianteGeneralResponse> editar(@PathVariable UUID id, @Valid @RequestBody EditarEstudianteRequest request) {
         Estudiante editado = editarEstudianteUseCase.editar(id, new EditarEstudianteCommand(
@@ -71,6 +74,7 @@ public class EstudianteController {
     }
 
     // Por defecto solo se listan activos; ?activo=false trae desactivados y ?activo=all trae todos.
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESOR')")
     @GetMapping
     public ResponseEntity<List<EstudianteGeneralResponse>> obtenerTodos(@RequestParam(required = false) String query,
                                                                         @RequestParam(required = false, defaultValue = "true") String activo) {
@@ -89,6 +93,7 @@ public class EstudianteController {
         return ResponseEntity.ok(estudiantes.stream().map(this::toResponse).toList());
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESOR')")
     @GetMapping("/{id}")
     public ResponseEntity<EstudianteGeneralResponse> obtenerPorId(@PathVariable UUID id) {
         return obtenerEstudianteUseCase.obtenerPorId(id)
