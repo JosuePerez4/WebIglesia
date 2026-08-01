@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 
 import icc.sanluis.webiglesia.application.usuario.services.CambiarEstadoUSuarioService;
 import icc.sanluis.webiglesia.application.usuario.services.CrearAdministradorService;
+import icc.sanluis.webiglesia.application.usuario.services.ObtenerAdministradorService;
 import icc.sanluis.webiglesia.application.usuario.services.CrearEstudianteService;
 import icc.sanluis.webiglesia.application.usuario.services.CrearProfesorService;
 import icc.sanluis.webiglesia.application.usuario.services.CrearUsuarioService;
@@ -23,6 +24,7 @@ import icc.sanluis.webiglesia.application.usuario.services.EstudianteGeneralServ
 
 import icc.sanluis.webiglesia.application.usuario.usecases.CambiarEstadoUsuarioUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearAdministradorUseCase;
+import icc.sanluis.webiglesia.application.usuario.usecases.ObtenerAdministradorUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearEstudianteUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearProfesorUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearUsuarioUseCase;
@@ -89,6 +91,11 @@ public class UsuarioUseCaseConfig {
                                                               AdministradorRepositoryPort administradorRepositoryPort,
                                                               PasswordHasherPort passwordHasherPort) {
         return new CrearAdministradorService(usuarioRepositoryPort, administradorRepositoryPort, passwordHasherPort);
+    }
+
+    @Bean
+    public ObtenerAdministradorUseCase obtenerAdministradorUseCase(AdministradorRepositoryPort administradorRepositoryPort) {
+        return new ObtenerAdministradorService(administradorRepositoryPort);
     }
 
     @Bean

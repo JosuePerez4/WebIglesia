@@ -1,14 +1,19 @@
 package icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario;
 
 import java.net.URI;
+import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearAdministradorUseCase;
+import icc.sanluis.webiglesia.application.usuario.usecases.ObtenerAdministradorUseCase;
 import icc.sanluis.webiglesia.domain.usuario.model.Administrador;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.CrearAdministradorCommand;
 import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.AdministradorResponse;
@@ -20,9 +25,12 @@ import jakarta.validation.Valid;
 public class AdministradorController {
 
     private final CrearAdministradorUseCase crearAdministradorUseCase;
+    private final ObtenerAdministradorUseCase obtenerAdministradorUseCase;
 
-    public AdministradorController(CrearAdministradorUseCase crearAdministradorUseCase) {
+    public AdministradorController(CrearAdministradorUseCase crearAdministradorUseCase,
+                                   ObtenerAdministradorUseCase obtenerAdministradorUseCase) {
         this.crearAdministradorUseCase = crearAdministradorUseCase;
+        this.obtenerAdministradorUseCase = obtenerAdministradorUseCase;
     }
 
     // TODO: proteger con rol de administrador cuando exista la capa de seguridad.
@@ -41,5 +49,18 @@ public class AdministradorController {
         return ResponseEntity
                 .created(URI.create("/administradores/" + administrador.getId()))
                 .body(AdministradorResponse.fromDomain(administrador));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<AdministradorResponse>> obtenerTodos() {
+        List<Administrador> administradores = obtenerAdministradorUseCase.obtenerTodos();
+        return ResponseEntity.ok(administradores.stream().map(AdministradorResponse::fromDomain).toList());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<AdministradorResponse> obtenerPorId(@PathVariable UUID id) {
+        return obtenerAdministradorUseCase.obtenerPorId(id)
+                .map(a -> ResponseEntity.ok(AdministradorResponse.fromDomain(a)))
+                .orElse(ResponseEntity.notFound().build());
     }
 }

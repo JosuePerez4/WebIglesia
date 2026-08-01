@@ -1,5 +1,6 @@
 package icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.usuario;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
@@ -35,5 +36,10 @@ public class AdministradorJpaAdapter implements AdministradorRepositoryPort {
     @Override
     public boolean existsById(UUID id) {
         return repository.existsById(id);
+    }
+
+    @Override
+    public List<Administrador> findAll() {
+        return repository.findAll().stream().map(AdministradorMapper::toDomain).toList();
     }
 }
