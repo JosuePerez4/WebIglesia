@@ -8,7 +8,6 @@ import icc.sanluis.webiglesia.application.usuario.services.CrearAdministradorSer
 import icc.sanluis.webiglesia.application.usuario.services.ObtenerAdministradorService;
 import icc.sanluis.webiglesia.application.usuario.services.CrearEstudianteService;
 import icc.sanluis.webiglesia.application.usuario.services.CrearProfesorService;
-import icc.sanluis.webiglesia.application.usuario.services.CrearUsuarioService;
 import icc.sanluis.webiglesia.application.usuario.services.EditarProfesorService;
 import icc.sanluis.webiglesia.application.usuario.services.ObtenerProfesorService;
 import icc.sanluis.webiglesia.application.usuario.services.EditarUsuarioService;
@@ -27,7 +26,6 @@ import icc.sanluis.webiglesia.application.usuario.usecases.CrearAdministradorUse
 import icc.sanluis.webiglesia.application.usuario.usecases.ObtenerAdministradorUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearEstudianteUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearProfesorUseCase;
-import icc.sanluis.webiglesia.application.usuario.usecases.CrearUsuarioUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarProfesorUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.ObtenerProfesorUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarUsuarioUseCase;
@@ -53,11 +51,6 @@ import icc.sanluis.webiglesia.domain.usuario.ports.out.ClaseRepositoryPort;
 
 @Configuration
 public class UsuarioUseCaseConfig {
-
-    @Bean
-    public CrearUsuarioUseCase crearUsuarioUseCase(UsuarioRepositoryPort usuarioRepositoryPort, PasswordHasherPort passwordHasherPort) {
-        return new CrearUsuarioService(usuarioRepositoryPort, passwordHasherPort);
-    }
 
     @Bean
     public EditarUsuarioUseCase editarUsuarioUseCase(UsuarioRepositoryPort usuarioRepositoryPort, PasswordHasherPort passwordHasherPort) {

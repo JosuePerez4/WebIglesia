@@ -23,8 +23,12 @@ public class EditarUsuarioService implements EditarUsuarioUseCase {
         Usuario usuarioAEditar = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("El usuario no existe"));
 
-        usuarioAEditar.setUsername(usuario.nombreusuario());
-        usuarioAEditar.setPasswordHash(passwordHasher.hash(usuario.contrasena()));
+        if (usuario.nombreusuario() != null && !usuario.nombreusuario().isBlank()) {
+            usuarioAEditar.setUsername(usuario.nombreusuario());
+        }
+        if (usuario.contrasena() != null && !usuario.contrasena().isBlank()) {
+            usuarioAEditar.setPasswordHash(passwordHasher.hash(usuario.contrasena()));
+        }
 
         return usuarioRepository.save(usuarioAEditar);
     }
