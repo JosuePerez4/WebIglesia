@@ -81,7 +81,7 @@ class CrearProfesorYEstudianteServiceTest {
         assertThat(estudianteRepository.findById(estudiante.getId())).isPresent();
         assertThat(estudiante.getUsuario()).isNotNull();
         assertThat(estudiante.getUsuario().getId()).isEqualTo(estudiante.getId());
-        assertThat(estudiante.getUsuario().getRol()).isEqualTo(Rol.ESTUDIANTE);
+        assertThat(estudiante.getUsuario().getRoles()).containsExactly(Rol.ESTUDIANTE);
         assertThat(passwordHasher.matches("222222222", estudiante.getUsuario().getPasswordHash())).isTrue();
     }
 
@@ -173,6 +173,11 @@ class CrearProfesorYEstudianteServiceTest {
         @Override
         public Optional<Estudiante> findById(UUID id) {
             return Optional.ofNullable(estudiantes.get(id));
+        }
+
+        @Override
+        public boolean existsById(UUID id) {
+            return estudiantes.containsKey(id);
         }
 
         @Override
