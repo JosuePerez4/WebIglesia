@@ -3,9 +3,9 @@ package icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dt
 import java.util.Set;
 
 import icc.sanluis.webiglesia.domain.usuario.model.Rol;
+import jakarta.validation.constraints.NotEmpty;
 
-public record EditarUsuarioRequest(
-    String nombreusuario,
-    String contrasena,
+public record AsignarRolesRequest(
+    @NotEmpty(message = "Debe asignar al menos un rol")
     Set<Rol> roles
 ) {}

@@ -3,7 +3,9 @@ package icc.sanluis.webiglesia.application.usuario.services;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearEstudianteGeneralUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarEstudianteUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.ObtenerEstudianteUseCase;
@@ -40,7 +42,7 @@ public class EstudianteGeneralService implements CrearEstudianteGeneralUseCase, 
         UUID id = UUID.randomUUID();
         String username = UsernameGenerator.generar(command.nombre(), command.fechaDeNacimiento(), id);
         String contrasena = (command.telefono() != null && !command.telefono().isBlank()) ? command.telefono() : id.toString();
-        Usuario usuario = usuarioRepository.save(new Usuario(id, username, passwordHasher.hash(contrasena), Rol.ESTUDIANTE, true, OffsetDateTime.now()));
+        Usuario usuario = usuarioRepository.save(new Usuario(id, username, passwordHasher.hash(contrasena), Set.of(Rol.ESTUDIANTE), true, OffsetDateTime.now()));
 
         Estudiante estudiante = new Estudiante();
         // El estudiante comparte id con su usuario asociado.

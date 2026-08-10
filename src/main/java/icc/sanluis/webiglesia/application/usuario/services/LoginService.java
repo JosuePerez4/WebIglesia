@@ -1,6 +1,8 @@
 package icc.sanluis.webiglesia.application.usuario.services;
 
 import icc.sanluis.webiglesia.application.usuario.usecases.LoginUseCase;
+import icc.sanluis.webiglesia.domain.usuario.exceptions.EstudianteNoPuedeIniciarSesionException;
+import icc.sanluis.webiglesia.domain.usuario.model.Rol;
 import icc.sanluis.webiglesia.domain.usuario.model.Usuario;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.LoginCommand;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.PasswordHasherPort;
@@ -27,6 +29,14 @@ public class LoginService implements LoginUseCase {
 
         if (!usuario.isActivo()) {
             throw new IllegalArgumentException("El usuario está inactivo");
+        }
+
+        if (usuario.getRoles().size() == 1 && usuario.getRoles().contains(Rol.ESTUDIANTE)) {
+            throw new EstudianteNoPuedeIniciarSesionException();
+        }
+
+        if (command.rol() != null && !usuario.getRoles().contains(command.rol())) {
+            throw new IllegalArgumentException("El usuario no tiene el rol: " + command.rol());
         }
 
         return usuario;

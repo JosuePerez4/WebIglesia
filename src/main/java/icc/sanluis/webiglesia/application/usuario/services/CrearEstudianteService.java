@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearEstudianteUseCase;
@@ -44,9 +45,8 @@ public class CrearEstudianteService implements CrearEstudianteUseCase {
         UUID id = UUID.randomUUID();
         String username = UsernameGenerator.generar(command.nombre(), command.fechaDeNacimiento(), id);
         String contrasena = (command.telefono() != null && !command.telefono().isBlank()) ? command.telefono() : id.toString();
-        Usuario usuario = usuarioRepository.save(new Usuario(id, username, passwordHasher.hash(contrasena), Rol.ESTUDIANTE, true, OffsetDateTime.now()));
+        Usuario usuario = usuarioRepository.save(new Usuario(id, username, passwordHasher.hash(contrasena), Set.of(Rol.ESTUDIANTE), true, OffsetDateTime.now()));
 
-        // El estudiante comparte id con su usuario asociado.
         estudiante.setId(id);
         estudiante.setNombre(command.nombre().trim());
         estudiante.setApellido(command.apellido().trim());
@@ -74,7 +74,6 @@ public class CrearEstudianteService implements CrearEstudianteUseCase {
         if (command.apellido() == null || command.apellido().isBlank()) {
             throw new IllegalArgumentException("El apellido del estudiante es obligatorio");
         }
-        // Teléfono y fecha de nacimiento son opcionales ahora.
 
         return new Estudiante();
     }

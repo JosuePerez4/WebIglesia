@@ -1,5 +1,7 @@
 package icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.usuario;
 
+import java.util.HashSet;
+
 import icc.sanluis.webiglesia.domain.usuario.model.Usuario;
 import icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.entities.UsuarioEntity;
 
@@ -10,7 +12,7 @@ public class UsuarioMapper {
         e.setId(u.getId());
         e.setUsername(u.getUsername());
         e.setPasswordHash(u.getPasswordHash());
-        e.setRol(u.getRol());
+        e.setRoles(new HashSet<>(u.getRoles()));
         e.setActivo(u.isActivo());
         e.setDiaIngreso(u.getDiaIngreso());
         return e;
@@ -21,7 +23,7 @@ public class UsuarioMapper {
                 e.getId(),
                 e.getUsername(),
                 e.getPasswordHash(),
-                e.getRol(),
+                new HashSet<>(e.getRoles()),
                 e.isActivo(),
                 e.getDiaIngreso()
         );

@@ -1,24 +1,27 @@
 package icc.sanluis.webiglesia.domain.usuario.model;
 
 import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class Usuario {
     private UUID id;
     private String username;
     private String passwordHash;
-    private Rol rol;
+    private Set<Rol> roles;
     private boolean activo;
     private OffsetDateTime diaIngreso;
 
     public Usuario() {
     }
 
-    public Usuario(UUID id, String username, String passwordHash, Rol rol, boolean activo, OffsetDateTime diaIngreso) {
+    public Usuario(UUID id, String username, String passwordHash, Set<Rol> roles, boolean activo, OffsetDateTime diaIngreso) {
         this.id = id;
         this.username = username;
         this.passwordHash = passwordHash;
-        this.rol = rol;
+        this.roles = roles != null ? new HashSet<>(roles) : new HashSet<>();
         this.activo = activo;
         this.diaIngreso = diaIngreso;
     }
@@ -47,12 +50,12 @@ public class Usuario {
         this.passwordHash = passwordHash;
     }
 
-    public Rol getRol() {
-        return rol;
+    public Set<Rol> getRoles() {
+        return Collections.unmodifiableSet(roles);
     }
 
-    public void setRol(Rol rol) {
-        this.rol = rol;
+    public void setRoles(Set<Rol> roles) {
+        this.roles = roles != null ? new HashSet<>(roles) : new HashSet<>();
     }
 
     public boolean isActivo() {
@@ -70,8 +73,7 @@ public class Usuario {
     public void setDiaIngreso(OffsetDateTime diaIngreso) {
         this.diaIngreso = diaIngreso;
     }
-    
-    // Métodos
+
     public Usuario nuevo () {
         this.id = UUID.randomUUID();
         this.activo = true;

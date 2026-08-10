@@ -39,6 +39,11 @@ public class EstudianteJpaAdapter implements EstudianteRepositoryPort {
     }
 
     @Override
+    public boolean existsById(UUID id) {
+        return repository.existsById(id);
+    }
+
+    @Override
     public List<Estudiante> findAll() {
         return repository.findAll().stream()
                 .map(EstudianteMapper::toDomain)

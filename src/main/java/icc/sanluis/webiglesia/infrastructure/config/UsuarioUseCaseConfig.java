@@ -3,12 +3,12 @@ package icc.sanluis.webiglesia.infrastructure.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import icc.sanluis.webiglesia.application.usuario.services.AsignarRolesService;
 import icc.sanluis.webiglesia.application.usuario.services.CambiarEstadoUSuarioService;
 import icc.sanluis.webiglesia.application.usuario.services.CrearAdministradorService;
 import icc.sanluis.webiglesia.application.usuario.services.ObtenerAdministradorService;
 import icc.sanluis.webiglesia.application.usuario.services.CrearEstudianteService;
 import icc.sanluis.webiglesia.application.usuario.services.CrearProfesorService;
-import icc.sanluis.webiglesia.application.usuario.services.CrearUsuarioService;
 import icc.sanluis.webiglesia.application.usuario.services.EditarProfesorService;
 import icc.sanluis.webiglesia.application.usuario.services.ObtenerProfesorService;
 import icc.sanluis.webiglesia.application.usuario.services.EditarUsuarioService;
@@ -22,12 +22,12 @@ import icc.sanluis.webiglesia.application.usuario.services.RegistrarAsistenciaSe
 import icc.sanluis.webiglesia.application.usuario.services.ObtenerAsistenciaService;
 import icc.sanluis.webiglesia.application.usuario.services.EstudianteGeneralService;
 
+import icc.sanluis.webiglesia.application.usuario.usecases.AsignarRolesUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CambiarEstadoUsuarioUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearAdministradorUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.ObtenerAdministradorUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearEstudianteUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearProfesorUseCase;
-import icc.sanluis.webiglesia.application.usuario.usecases.CrearUsuarioUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarProfesorUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.ObtenerProfesorUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarUsuarioUseCase;
@@ -55,13 +55,12 @@ import icc.sanluis.webiglesia.domain.usuario.ports.out.ClaseRepositoryPort;
 public class UsuarioUseCaseConfig {
 
     @Bean
-    public CrearUsuarioUseCase crearUsuarioUseCase(UsuarioRepositoryPort usuarioRepositoryPort, PasswordHasherPort passwordHasherPort) {
-        return new CrearUsuarioService(usuarioRepositoryPort, passwordHasherPort);
-    }
-
-    @Bean
-    public EditarUsuarioUseCase editarUsuarioUseCase(UsuarioRepositoryPort usuarioRepositoryPort, PasswordHasherPort passwordHasherPort) {
-        return new EditarUsuarioService(usuarioRepositoryPort, passwordHasherPort);
+    public EditarUsuarioUseCase editarUsuarioUseCase(UsuarioRepositoryPort usuarioRepositoryPort,
+                                                     PasswordHasherPort passwordHasherPort,
+                                                     ProfesorRepositoryPort profesorRepositoryPort,
+                                                     AdministradorRepositoryPort administradorRepositoryPort,
+                                                     EstudianteRepositoryPort estudianteRepositoryPort) {
+        return new EditarUsuarioService(usuarioRepositoryPort, passwordHasherPort, profesorRepositoryPort, administradorRepositoryPort, estudianteRepositoryPort);
     }
 
     @Bean
@@ -166,5 +165,13 @@ public class UsuarioUseCaseConfig {
     @Bean
     public ObtenerEstudianteUseCase obtenerEstudianteUseCase(EstudianteRepositoryPort estudianteRepositoryPort, UsuarioRepositoryPort usuarioRepositoryPort, PasswordHasherPort passwordHasherPort) {
         return new EstudianteGeneralService(estudianteRepositoryPort, usuarioRepositoryPort, passwordHasherPort);
+    }
+
+    @Bean
+    public AsignarRolesUseCase asignarRolesUseCase(UsuarioRepositoryPort usuarioRepositoryPort,
+                                                    ProfesorRepositoryPort profesorRepositoryPort,
+                                                    AdministradorRepositoryPort administradorRepositoryPort,
+                                                    EstudianteRepositoryPort estudianteRepositoryPort) {
+        return new AsignarRolesService(usuarioRepositoryPort, profesorRepositoryPort, administradorRepositoryPort, estudianteRepositoryPort);
     }
 }
