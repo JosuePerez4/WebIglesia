@@ -2,6 +2,7 @@ package icc.sanluis.webiglesia.application.usuario.services;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearProfesorUseCase;
@@ -36,14 +37,13 @@ public class CrearProfesorService implements CrearProfesorUseCase {
                 id,
                 username,
                 passwordHasher.hash(command.telefono()),
-                Rol.PROFESOR,
+                Set.of(Rol.PROFESOR),
                 true,
                 OffsetDateTime.now()
         );
         usuario = usuarioRepository.save(usuario);
 
         Profesor profesor = new Profesor();
-        // El profesor comparte id con su usuario asociado.
         profesor.setId(id);
         profesor.setNombre(command.nombre().trim());
         profesor.setApellido(command.apellido().trim());

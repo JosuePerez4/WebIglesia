@@ -2,6 +2,7 @@ package icc.sanluis.webiglesia.application.usuario.services;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearAdministradorUseCase;
@@ -41,14 +42,13 @@ public class CrearAdministradorService implements CrearAdministradorUseCase {
                 id,
                 command.username().trim(),
                 passwordHasher.hash(command.contrasena()),
-                Rol.ADMIN,
+                Set.of(Rol.ADMIN),
                 true,
                 OffsetDateTime.now()
         );
         usuario = usuarioRepository.save(usuario);
 
         Administrador administrador = new Administrador();
-        // El administrador comparte id con su usuario asociado.
         administrador.setId(id);
         administrador.setNombre(command.nombre().trim());
         administrador.setApellido(command.apellido().trim());
