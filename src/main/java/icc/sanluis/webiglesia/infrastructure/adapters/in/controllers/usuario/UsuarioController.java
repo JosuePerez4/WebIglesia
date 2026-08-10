@@ -13,14 +13,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import icc.sanluis.webiglesia.application.usuario.usecases.AsignarRolesUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CambiarEstadoUsuarioUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarUsuarioUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.LoginUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.ObtenerUsuarioUseCase;
+import icc.sanluis.webiglesia.domain.usuario.model.Rol;
 import icc.sanluis.webiglesia.domain.usuario.model.Usuario;
+import icc.sanluis.webiglesia.domain.usuario.ports.in.AsignarRolesCommand;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.CambiarEstadoUsuarioCommand;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.EditarUsuarioCommand;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.LoginCommand;
+import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.AsignarRolesRequest;
 import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.CambiarEstadoUsuarioRequest;
 import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.EditarUsuarioRequest;
 import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.LoginRequest;
@@ -38,17 +42,20 @@ public class UsuarioController {
     private final LoginUseCase loginUseCase;
     private final ObtenerUsuarioUseCase obtenerUsuarioUseCase;
     private final JwtService jwtService;
+    private final AsignarRolesUseCase asignarRolesUseCase;
 
     public UsuarioController(EditarUsuarioUseCase editarUsuarioUseCase,
                              CambiarEstadoUsuarioUseCase cambiarEstadoUsuarioUseCase,
                              LoginUseCase loginUseCase,
                              ObtenerUsuarioUseCase obtenerUsuarioUseCase,
-                             JwtService jwtService) {
+                             JwtService jwtService,
+                             AsignarRolesUseCase asignarRolesUseCase) {
         this.editarUsuarioUseCase = editarUsuarioUseCase;
         this.cambiarEstadoUsuarioUseCase = cambiarEstadoUsuarioUseCase;
         this.loginUseCase = loginUseCase;
         this.obtenerUsuarioUseCase = obtenerUsuarioUseCase;
         this.jwtService = jwtService;
+        this.asignarRolesUseCase = asignarRolesUseCase;
     }
 
     @PreAuthorize("hasRole('ADMIN') or @authz.esPropioUsuario(#id)")
@@ -61,9 +68,20 @@ public class UsuarioController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
-        Usuario usuario = loginUseCase.login(new LoginCommand(request.nombreusuario(), request.contrasena()));
-        String token = jwtService.generarToken(usuario);
-        return ResponseEntity.ok(LoginResponse.fromDomain(usuario, token));
+        LoginCommand loginCommand = new LoginCommand(request.nombreusuario(), request.contrasena(), request.rol());
+        Usuario usuario = loginUseCase.login(loginCommand);
+
+        String token;
+        Rol rolSeleccionado;
+        if (request.rol() != null) {
+            token = jwtService.generarToken(usuario, request.rol());
+            rolSeleccionado = request.rol();
+        } else {
+            token = jwtService.generarToken(usuario);
+            rolSeleccionado = usuario.getRoles().iterator().next();
+        }
+
+        return ResponseEntity.ok(LoginResponse.fromDomain(usuario, token, rolSeleccionado));
     }
 
     @PreAuthorize("hasRole('ADMIN') or @authz.esPropioUsuario(#id)")
@@ -71,7 +89,8 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponse> editar(@PathVariable UUID id, @Valid @RequestBody EditarUsuarioRequest request) {
         EditarUsuarioCommand editado = new EditarUsuarioCommand(
             request.nombreusuario(),
-            request.contrasena()
+            request.contrasena(),
+            request.roles()
         );
         Usuario usuarioActualizado = editarUsuarioUseCase.editar(id, editado);
         return ResponseEntity.ok(UsuarioResponse.fromDomain(usuarioActualizado));
@@ -83,7 +102,16 @@ public class UsuarioController {
         CambiarEstadoUsuarioCommand usuarioEstadoCambiado = new CambiarEstadoUsuarioCommand(
             request.activo()
         );
-        Usuario usuarioActualizado = cambiarEstadoUsuarioUseCase.cambiarEstado(id, usuarioEstadoCambiado) ;
+        Usuario usuarioActualizado = cambiarEstadoUsuarioUseCase.cambiarEstado(id, usuarioEstadoCambiado);
         return ResponseEntity.ok(UsuarioResponse.fromDomain(usuarioActualizado));
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or @authz.esPropioUsuario(#id)")
+    @PatchMapping("/{id}/roles")
+    public ResponseEntity<UsuarioResponse> asignarRoles(@PathVariable UUID id,
+                                                         @Valid @RequestBody AsignarRolesRequest request) {
+        AsignarRolesCommand command = new AsignarRolesCommand(request.roles());
+        Usuario usuario = asignarRolesUseCase.asignar(id, command);
+        return ResponseEntity.ok(UsuarioResponse.fromDomain(usuario));
     }
 }

@@ -31,8 +31,12 @@ public class LoginService implements LoginUseCase {
             throw new IllegalArgumentException("El usuario está inactivo");
         }
 
-        if (usuario.getRol() == Rol.ESTUDIANTE) {
+        if (usuario.getRoles().size() == 1 && usuario.getRoles().contains(Rol.ESTUDIANTE)) {
             throw new EstudianteNoPuedeIniciarSesionException();
+        }
+
+        if (command.rol() != null && !usuario.getRoles().contains(command.rol())) {
+            throw new IllegalArgumentException("El usuario no tiene el rol: " + command.rol());
         }
 
         return usuario;
