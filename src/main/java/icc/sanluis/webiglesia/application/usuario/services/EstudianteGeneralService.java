@@ -6,11 +6,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-<<<<<<< Updated upstream
-=======
 import org.springframework.transaction.annotation.Transactional;
-
->>>>>>> Stashed changes
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearEstudianteGeneralUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarEstudianteUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.ObtenerEstudianteUseCase;
