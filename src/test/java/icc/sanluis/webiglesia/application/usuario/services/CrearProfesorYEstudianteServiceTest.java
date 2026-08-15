@@ -217,5 +217,12 @@ class CrearProfesorYEstudianteServiceTest {
                     .filter(e -> e.getUsuario() != null && e.getUsuario().isActivo() == activo)
                     .collect(Collectors.toList());
         }
+
+        @Override
+        public Optional<Estudiante> findByCorreo(String correo) {
+            return estudiantes.values().stream()
+                    .filter(e -> correo.equals(e.getCorreo()))
+                    .findFirst();
+        }
     }
 }

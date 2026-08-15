@@ -114,7 +114,8 @@ public class ProfesorController {
         return ResponseEntity.ok(ProfesorResponse.fromDomain(profesor));
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @authz.esPropioUsuario(#profesorId)")
+
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESOR')")
     @PostMapping("/{profesorId}/estudiantes")
     public ResponseEntity<EstudianteResponse> crearEstudiante(@PathVariable UUID profesorId, @Valid @RequestBody CrearEstudianteRequest request) {
         Estudiante estudiante = crearEstudianteUseCase.crear(profesorId, new CrearEstudianteCommand(
@@ -130,7 +131,7 @@ public class ProfesorController {
                 .body(EstudianteResponse.fromDomain(estudiante));
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @authz.esPropioUsuario(#profesorId)")
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESOR')")
     @PostMapping("/{profesorId}/estudiantes/multiples")
     public ResponseEntity<List<EstudianteResponse>> crearEstudiantesMultiples(@PathVariable UUID profesorId, @Valid @RequestBody List<CrearEstudianteRequest> requests) {
         List<Estudiante> estudiantes = crearEstudianteUseCase.crearMultiples(profesorId, requests.stream()

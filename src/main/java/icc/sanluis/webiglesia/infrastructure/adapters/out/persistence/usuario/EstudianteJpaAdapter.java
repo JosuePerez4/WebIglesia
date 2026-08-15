@@ -70,4 +70,9 @@ public class EstudianteJpaAdapter implements EstudianteRepositoryPort {
                 .map(EstudianteMapper::toDomain)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Optional<Estudiante> findByCorreo(String correo) {
+        return repository.findByCorreo(correo).map(EstudianteMapper::toDomain);
+    }
 }

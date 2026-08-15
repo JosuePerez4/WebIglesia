@@ -6,6 +6,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+<<<<<<< Updated upstream
+=======
+import org.springframework.transaction.annotation.Transactional;
+
+>>>>>>> Stashed changes
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearEstudianteGeneralUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarEstudianteUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.ObtenerEstudianteUseCase;
@@ -31,12 +36,18 @@ public class EstudianteGeneralService implements CrearEstudianteGeneralUseCase, 
     }
 
     @Override
+    @Transactional
     public Estudiante crear(CrearEstudianteCommand command) {
         if (command.nombre() == null || command.nombre().isBlank()) {
             throw new IllegalArgumentException("El nombre del estudiante es obligatorio");
         }
         if (command.apellido() == null || command.apellido().isBlank()) {
             throw new IllegalArgumentException("El apellido del estudiante es obligatorio");
+        }
+
+        if (command.correo() != null && !command.correo().isBlank()) {
+            estudianteRepository.findByCorreo(command.correo())
+                    .ifPresent(e -> { throw new IllegalArgumentException("Ya existe un estudiante con el correo: " + command.correo()); });
         }
 
         UUID id = UUID.randomUUID();

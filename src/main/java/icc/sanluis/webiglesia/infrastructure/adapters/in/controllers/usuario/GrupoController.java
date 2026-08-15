@@ -59,7 +59,8 @@ public class GrupoController {
                 .body(GrupoResponse.fromDomain(grupo));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
+    @PreAuthorize("hasRole('ADMIN') or @authz.esProfesorDelGrupo(#id)")
     @PutMapping("/{id}")
     public ResponseEntity<GrupoResponse> editar(@PathVariable UUID id, @Valid @RequestBody EditarGrupoRequest request) {
         Grupo grupo = editarGrupoUseCase.editar(id, new EditarGrupoCommand(
