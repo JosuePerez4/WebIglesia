@@ -21,4 +21,5 @@ public interface EstudianteRepositoryPort {
     List<Estudiante> findByActivo(boolean activo);
     List<Estudiante> buscarPorNombreOApellido(String query);
     List<Estudiante> buscarPorNombreOApellidoYActivo(String query, boolean activo);
+    Optional<Estudiante> findByCorreo(String correo);
 }

@@ -1,6 +1,7 @@
 package icc.sanluis.webiglesia.infrastructure.adapters.out.persistence.repositories;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,4 +28,6 @@ public interface SpringDataEstudianteRepository extends JpaRepository<Estudiante
            "WHERE (LOWER(e.nombre) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(e.apellido) LIKE LOWER(CONCAT('%', :query, '%'))) " +
            "AND u.activo = :activo")
     List<EstudianteEntity> buscarPorNombreOApellidoYActivo(@Param("query") String query, @Param("activo") boolean activo);
+
+    Optional<EstudianteEntity> findByCorreo(String correo);
 }

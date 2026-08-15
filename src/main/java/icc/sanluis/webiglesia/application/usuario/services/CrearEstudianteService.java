@@ -7,6 +7,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearEstudianteUseCase;
 import icc.sanluis.webiglesia.domain.usuario.model.Estudiante;
 import icc.sanluis.webiglesia.domain.usuario.model.Profesor;
@@ -36,10 +38,16 @@ public class CrearEstudianteService implements CrearEstudianteUseCase {
     }
 
     @Override
+    @Transactional
     public Estudiante crear(UUID profesorId, CrearEstudianteCommand command) {
         Objects.requireNonNull(profesorId, "El id del profesor es obligatorio");
         Profesor profesor = profesorRepository.findById(profesorId)
                 .orElseThrow(() -> new IllegalArgumentException("No existe el profesor indicado"));
+
+        if (command.correo() != null && !command.correo().isBlank()) {
+            estudianteRepository.findByCorreo(command.correo())
+                    .ifPresent(e -> { throw new IllegalArgumentException("Ya existe un estudiante con el correo: " + command.correo()); });
+        }
 
         Estudiante estudiante = convertir(command);
         UUID id = UUID.randomUUID();
