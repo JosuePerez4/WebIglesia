@@ -1,0 +1,18 @@
+name: Keep Alive Weekend
+
+on:
+  schedule:
+    - cron: '*/13 8-23 * * 5'  # Se enciende Viernes 8AM-11PM y hace ping cada 13 min para mantener despierto el backend en render
+    - cron: '*/13 * * * 6'     # Sábado todo el día
+    - cron: '*/13 * * * 0'     # Domingo todo el día y luego, muere hasta el próximo viernes
+
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Backend
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" \
+            https://backend-icc-san-luis.onrender.com/actuator/health
