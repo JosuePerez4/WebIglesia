@@ -2,9 +2,9 @@ name: Keep Alive Weekend
 
 on:
   schedule:
-    - cron: '*/13 8-23 * * 5'  # Se enciende Viernes 8AM-11PM y hace ping cada 13 min para mantener despierto el backend en render
-    - cron: '*/13 * * * 6'     # Sábado todo el día
-    - cron: '*/13 * * * 0'     # Domingo todo el día y luego, muere hasta el próximo viernes
+    - cron: '*/12 8-23 * * 5'  # Se enciende Viernes 8AM-11PM y hace ping cada 12 min para mantener despierto el backend en render
+    - cron: '*/12 * * * 6'     # Sábado todo el día
+    - cron: '*/12 * * * 0'     # Domingo todo el día y luego, muere hasta el próximo viernes
 
   workflow_dispatch:
 
