@@ -1,5 +1,6 @@
 package icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario;
 
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
@@ -14,21 +15,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import icc.sanluis.webiglesia.application.usuario.usecases.AsignarRolesUseCase;
+import icc.sanluis.webiglesia.application.usuario.usecases.CambiarContrasenaUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CambiarEstadoUsuarioUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarUsuarioUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.LoginUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.ObtenerUsuarioUseCase;
+import icc.sanluis.webiglesia.application.usuario.usecases.RestablecerContrasenaUseCase;
+import icc.sanluis.webiglesia.application.usuario.usecases.SolicitarResetContrasenaUseCase;
 import icc.sanluis.webiglesia.domain.usuario.model.Rol;
 import icc.sanluis.webiglesia.domain.usuario.model.Usuario;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.AsignarRolesCommand;
+import icc.sanluis.webiglesia.domain.usuario.ports.in.CambiarContrasenaCommand;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.CambiarEstadoUsuarioCommand;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.EditarUsuarioCommand;
 import icc.sanluis.webiglesia.domain.usuario.ports.in.LoginCommand;
+import icc.sanluis.webiglesia.domain.usuario.ports.in.RestablecerContrasenaCommand;
+import icc.sanluis.webiglesia.domain.usuario.ports.in.SolicitarResetContrasenaCommand;
 import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.AsignarRolesRequest;
+import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.CambiarContrasenaRequest;
 import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.CambiarEstadoUsuarioRequest;
 import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.EditarUsuarioRequest;
 import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.LoginRequest;
 import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.LoginResponse;
+import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.RestablecerContrasenaRequest;
+import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.SolicitarResetContrasenaRequest;
 import icc.sanluis.webiglesia.infrastructure.adapters.in.controllers.usuario.dto.UsuarioResponse;
 import icc.sanluis.webiglesia.infrastructure.adapters.out.security.JwtService;
 import jakarta.validation.Valid;
@@ -43,19 +53,28 @@ public class UsuarioController {
     private final ObtenerUsuarioUseCase obtenerUsuarioUseCase;
     private final JwtService jwtService;
     private final AsignarRolesUseCase asignarRolesUseCase;
+    private final CambiarContrasenaUseCase cambiarContrasenaUseCase;
+    private final SolicitarResetContrasenaUseCase solicitarResetContrasenaUseCase;
+    private final RestablecerContrasenaUseCase restablecerContrasenaUseCase;
 
     public UsuarioController(EditarUsuarioUseCase editarUsuarioUseCase,
                              CambiarEstadoUsuarioUseCase cambiarEstadoUsuarioUseCase,
                              LoginUseCase loginUseCase,
                              ObtenerUsuarioUseCase obtenerUsuarioUseCase,
                              JwtService jwtService,
-                             AsignarRolesUseCase asignarRolesUseCase) {
+                             AsignarRolesUseCase asignarRolesUseCase,
+                             CambiarContrasenaUseCase cambiarContrasenaUseCase,
+                             SolicitarResetContrasenaUseCase solicitarResetContrasenaUseCase,
+                             RestablecerContrasenaUseCase restablecerContrasenaUseCase) {
         this.editarUsuarioUseCase = editarUsuarioUseCase;
         this.cambiarEstadoUsuarioUseCase = cambiarEstadoUsuarioUseCase;
         this.loginUseCase = loginUseCase;
         this.obtenerUsuarioUseCase = obtenerUsuarioUseCase;
         this.jwtService = jwtService;
         this.asignarRolesUseCase = asignarRolesUseCase;
+        this.cambiarContrasenaUseCase = cambiarContrasenaUseCase;
+        this.solicitarResetContrasenaUseCase = solicitarResetContrasenaUseCase;
+        this.restablecerContrasenaUseCase = restablecerContrasenaUseCase;
     }
 
     @PreAuthorize("hasRole('ADMIN') or @authz.esPropioUsuario(#id)")
@@ -113,5 +132,26 @@ public class UsuarioController {
         AsignarRolesCommand command = new AsignarRolesCommand(request.roles());
         Usuario usuario = asignarRolesUseCase.asignar(id, command);
         return ResponseEntity.ok(UsuarioResponse.fromDomain(usuario));
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or @authz.esPropioUsuario(#id)")
+    @PatchMapping("/{id}/cambiar-contrasena")
+    public ResponseEntity<UsuarioResponse> cambiarContrasena(@PathVariable UUID id,
+                                                              @Valid @RequestBody CambiarContrasenaRequest request) {
+        CambiarContrasenaCommand command = new CambiarContrasenaCommand(request.contrasenaActual(), request.contrasenaNueva());
+        Usuario usuario = cambiarContrasenaUseCase.cambiarContrasena(id, command);
+        return ResponseEntity.ok(UsuarioResponse.fromDomain(usuario));
+    }
+
+    @PostMapping("/olvide-contrasena")
+    public ResponseEntity<Map<String, String>> solicitarReset(@Valid @RequestBody SolicitarResetContrasenaRequest request) {
+        solicitarResetContrasenaUseCase.solicitarReset(new SolicitarResetContrasenaCommand(request.correo()));
+        return ResponseEntity.ok(Map.of("message", "Si el correo está registrado, recibirás un enlace de recuperación"));
+    }
+
+    @PostMapping("/restablecer-contrasena")
+    public ResponseEntity<Map<String, String>> restablecerContrasena(@Valid @RequestBody RestablecerContrasenaRequest request) {
+        restablecerContrasenaUseCase.restablecerContrasena(new RestablecerContrasenaCommand(request.token(), request.nuevaContrasena()));
+        return ResponseEntity.ok(Map.of("message", "Contraseña actualizada correctamente"));
     }
 }
