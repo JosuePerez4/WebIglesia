@@ -124,6 +124,11 @@ class CrearProfesorYEstudianteServiceTest {
         }
 
         @Override
+        public Optional<Usuario> findByCorreo(String correo) {
+            return Optional.empty();
+        }
+
+        @Override
         public boolean existsById(UUID id) {
             return usuarios.containsKey(id);
         }

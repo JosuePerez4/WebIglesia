@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import icc.sanluis.webiglesia.application.usuario.services.AsignarRolesService;
+import icc.sanluis.webiglesia.application.usuario.services.CambiarContrasenaService;
 import icc.sanluis.webiglesia.application.usuario.services.CambiarEstadoUSuarioService;
 import icc.sanluis.webiglesia.application.usuario.services.CrearAdministradorService;
 import icc.sanluis.webiglesia.application.usuario.services.ObtenerAdministradorService;
@@ -21,8 +22,11 @@ import icc.sanluis.webiglesia.application.usuario.services.EliminarGrupoService;
 import icc.sanluis.webiglesia.application.usuario.services.RegistrarAsistenciaService;
 import icc.sanluis.webiglesia.application.usuario.services.ObtenerAsistenciaService;
 import icc.sanluis.webiglesia.application.usuario.services.EstudianteGeneralService;
+import icc.sanluis.webiglesia.application.usuario.services.RestablecerContrasenaService;
+import icc.sanluis.webiglesia.application.usuario.services.SolicitarResetContrasenaService;
 
 import icc.sanluis.webiglesia.application.usuario.usecases.AsignarRolesUseCase;
+import icc.sanluis.webiglesia.application.usuario.usecases.CambiarContrasenaUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CambiarEstadoUsuarioUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearAdministradorUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.ObtenerAdministradorUseCase;
@@ -42,10 +46,14 @@ import icc.sanluis.webiglesia.application.usuario.usecases.ObtenerAsistenciaUseC
 import icc.sanluis.webiglesia.application.usuario.usecases.CrearEstudianteGeneralUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.EditarEstudianteUseCase;
 import icc.sanluis.webiglesia.application.usuario.usecases.ObtenerEstudianteUseCase;
+import icc.sanluis.webiglesia.application.usuario.usecases.RestablecerContrasenaUseCase;
+import icc.sanluis.webiglesia.application.usuario.usecases.SolicitarResetContrasenaUseCase;
 
 import icc.sanluis.webiglesia.domain.usuario.ports.out.AdministradorRepositoryPort;
+import icc.sanluis.webiglesia.domain.usuario.ports.out.EmailServicePort;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.EstudianteRepositoryPort;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.PasswordHasherPort;
+import icc.sanluis.webiglesia.domain.usuario.ports.out.PasswordResetTokenRepositoryPort;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.ProfesorRepositoryPort;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.UsuarioRepositoryPort;
 import icc.sanluis.webiglesia.domain.usuario.ports.out.GrupoRepositoryPort;
@@ -173,5 +181,25 @@ public class UsuarioUseCaseConfig {
                                                     AdministradorRepositoryPort administradorRepositoryPort,
                                                     EstudianteRepositoryPort estudianteRepositoryPort) {
         return new AsignarRolesService(usuarioRepositoryPort, profesorRepositoryPort, administradorRepositoryPort, estudianteRepositoryPort);
+    }
+
+    @Bean
+    public CambiarContrasenaUseCase cambiarContrasenaUseCase(UsuarioRepositoryPort usuarioRepositoryPort,
+                                                            PasswordHasherPort passwordHasherPort) {
+        return new CambiarContrasenaService(usuarioRepositoryPort, passwordHasherPort);
+    }
+
+    @Bean
+    public SolicitarResetContrasenaUseCase solicitarResetContrasenaUseCase(UsuarioRepositoryPort usuarioRepositoryPort,
+                                                                          PasswordResetTokenRepositoryPort tokenRepositoryPort,
+                                                                          EmailServicePort emailServicePort) {
+        return new SolicitarResetContrasenaService(usuarioRepositoryPort, tokenRepositoryPort, emailServicePort);
+    }
+
+    @Bean
+    public RestablecerContrasenaUseCase restablecerContrasenaUseCase(UsuarioRepositoryPort usuarioRepositoryPort,
+                                                                    PasswordResetTokenRepositoryPort tokenRepositoryPort,
+                                                                    PasswordHasherPort passwordHasherPort) {
+        return new RestablecerContrasenaService(usuarioRepositoryPort, tokenRepositoryPort, passwordHasherPort);
     }
 }

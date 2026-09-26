@@ -35,6 +35,13 @@ public class UsuarioJpaAdapter implements UsuarioRepositoryPort {
     }
 
     @Override
+    public Optional<Usuario> findByCorreo(String correo) {
+        return repo.findUserIdByCorreo(correo)
+                .flatMap(repo::findById)
+                .map(UsuarioMapper::toDomain);
+    }
+
+    @Override
     public boolean existsById(UUID id) {
         return repo.existsById(id);
     }

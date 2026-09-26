@@ -13,7 +13,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import icc.sanluis.webiglesia.domain.usuario.exceptions.ContrasenaActualIncorrectaException;
 import icc.sanluis.webiglesia.domain.usuario.exceptions.EstudianteNoPuedeIniciarSesionException;
+import icc.sanluis.webiglesia.domain.usuario.exceptions.TokenResetExpiradoException;
+import icc.sanluis.webiglesia.domain.usuario.exceptions.UsuarioNoEncontradoPorCorreoException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -46,6 +49,24 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EstudianteNoPuedeIniciarSesionException.class)
     public ResponseEntity<ErrorResponse> handleEstudianteLogin(EstudianteNoPuedeIniciarSesionException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorResponse.of(ex.getMessage()));
+    }
+
+    // Contraseña actual incorrecta al intentar cambiar contraseña.
+    @ExceptionHandler(ContrasenaActualIncorrectaException.class)
+    public ResponseEntity<ErrorResponse> handleContrasenaIncorrecta(ContrasenaActualIncorrectaException ex) {
+        return ResponseEntity.badRequest().body(ErrorResponse.of(ex.getMessage()));
+    }
+
+    // Token de recuperación expirado o ya utilizado.
+    @ExceptionHandler(TokenResetExpiradoException.class)
+    public ResponseEntity<ErrorResponse> handleTokenExpirado(TokenResetExpiradoException ex) {
+        return ResponseEntity.badRequest().body(ErrorResponse.of(ex.getMessage()));
+    }
+
+    // Usuario no encontrado por correo: responder 200 para evitar enumeración de emails.
+    @ExceptionHandler(UsuarioNoEncontradoPorCorreoException.class)
+    public ResponseEntity<ErrorResponse> handleUsuarioNoEncontrado(UsuarioNoEncontradoPorCorreoException ex) {
+        return ResponseEntity.ok(ErrorResponse.of("Si el correo está registrado, recibirás un enlace de recuperación"));
     }
 
     // AccessDeniedException de @PreAuthorize se resuelve aquí (dentro del dispatch de MVC) antes de
