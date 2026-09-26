@@ -36,3 +36,12 @@ src/main/resources/application.properties
 
 # .env
 .env
+
+# docs
+docs/
+
+# atl
+.atl/
+
+# openSec
+openspec/
